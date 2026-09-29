@@ -310,7 +310,79 @@ menunjukkan pewarisan, dan garis putus-putus menunjukkan ketergantungan.
 Tanda `~` menunjukkan akses package-private. `getJenisAkad()` dideklarasikan
 abstrak pada `AkadPembiayaan` dan diimplementasikan oleh kedua turunannya.
 
+## UML box factory untuk slide presentasi
+
+Potongan ini dapat dipakai sebagai box `PembuatAkad` dan relasi langsungnya
+pada slide class diagram:
+
+```mermaid
+classDiagram
+class PengajuanPembiayaan {
+  +buatAkad(String, KeputusanPembiayaan, String) AkadPembiayaan
+}
+
+class PembuatAkad {
+  <<factory>>
+  -PembuatAkad()
+  +buatAkad(String, PengajuanPembiayaan, KeputusanPembiayaan, String)$ AkadPembiayaan
+}
+
+class JenisAkad {
+  <<enumeration>>
+  MUDHARABAH
+  MUSYARAKAH
+}
+
+class AkadPembiayaan {
+  <<abstract>>
+}
+
+class AkadMudharabah
+class AkadMusyarakah
+
+PengajuanPembiayaan ..> PembuatAkad : meminta setelah disetujui
+PembuatAkad ..> JenisAkad : membaca jenis akad
+PembuatAkad ..> AkadMudharabah : membuat untuk Mudharabah
+PembuatAkad ..> AkadMusyarakah : membuat untuk Musyarakah
+AkadPembiayaan <|-- AkadMudharabah
+AkadPembiayaan <|-- AkadMusyarakah
+```
+
+Method factory bersifat static. `PengajuanPembiayaan.buatAkad(...)` tetap
+menjadi pintu pemanggilan dari alur utama, sedangkan pemilihan subclass
+didelegasikan ke `PembuatAkad`. Jika ada akad baru, daftar enum dan factory
+perlu diperbarui bersama class akad baru; class pengajuan tidak perlu diberi
+percabangan baru.
+
 ## Flowchart
+
+Ringkasan berikut cocok untuk slide alur sistem; flowchart lengkap di bawahnya
+menampilkan validasi dan perubahan status secara lebih rinci.
+
+```mermaid
+flowchart TD
+    A([Mulai]) --> B[Siapkan bank dan pegawai terdaftar]
+    B --> C[Siapkan nasabah, usaha, rekening, dan pengajuan]
+    C --> D[Mulai analisis oleh pegawai]
+    D --> E[Catat snapshot keuangan usaha]
+    E --> F[Hitung laba operasional dan arus kas tersedia]
+    F --> G[Berikan rekomendasi internal kepada pegawai]
+    G --> H[Pegawai menetapkan keputusan]
+    H --> I{Disetujui?}
+    I -- Tidak --> J[Catat status DITOLAK dan riwayat]
+    J --> K([Selesai tanpa akad])
+    I -- Ya --> L[Catat status DISETUJUI dan riwayat]
+    L --> M[pengajuan.buatAkad meminta PembuatAkad]
+    M --> N{Jenis akad}
+    N -- Mudharabah --> O[Buat AkadMudharabah]
+    N -- Musyarakah --> P[Buat AkadMusyarakah]
+    O --> Q[Tandatangani akad]
+    P --> Q
+    Q --> R[Cairkan dana penuh satu kali]
+    R --> S[Kredit rekening nasabah]
+    S --> T[Tampilkan pencairan, saldo, dan riwayat]
+    T --> U([Selesai])
+```
 
 ```mermaid
 flowchart TD

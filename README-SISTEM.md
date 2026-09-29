@@ -15,6 +15,83 @@ Ini adalah model pembelajaran, bukan aplikasi bank produksi atau penetapan
 aturan hukum/fatwa. Seluruh data contoh dibuat di `Main`, hanya berada di
 memori, dan hilang setelah program berhenti.
 
+## Panduan revisi presentasi PDF
+
+Panduan ini merujuk nomor halaman/slide pada PDF 41 halaman yang diberikan.
+Tujuannya menyelaraskan presentasi dengan source saat ini: analisis kelayakan
+usaha sebelum keputusan, factory akad, dan batas proses sampai pencairan.
+
+| Slide saat ini | Tindakan dan revisi |
+|---|---|
+| **1** | Pertahankan halaman judul. Opsional: ubah subjudul menjadi “Sistem Pengajuan Pembiayaan Usaha Mudharabah dan Musyarakah — proses hingga pencairan”. |
+| **2** | Tidak perlu perubahan class diagram. Pertahankan hanya jika kutipan dan sumbernya sudah diverifikasi serta relevan dengan presentasi. |
+| **3** | Pertahankan pengenalan Mudharabah/Musyarakah; pastikan tidak menyiratkan bahwa sistem mengelola pembagian hasil karena scope program berhenti setelah pencairan. |
+| **4** | Pertahankan scope, lalu tegaskan analisis usaha dan rekomendasi pegawai terjadi sebelum keputusan. Tetap tulis laporan usaha pascapencairan, bagi hasil, kerugian, evaluasi, pembayaran, dan penyelesaian akad sebagai di luar scope. |
+| **5** | Perbarui daftar aktor/entitas: tambahkan `PembuatAkad`; deskripsikan `AnalisisKelayakan` sebagai penghitung indikator snapshot usaha; sebut `PegawaiBank` sebagai pegawai bank yang terdaftar. Hapus `ProfilKeuangan` jika muncul. |
+| **6** | Ganti service lama dengan alur pemanggilan model langsung: `mulaiAnalisis`, mencatat analisis, `catatKeputusan`, `pengajuan.buatAkad(...)` yang mendelegasikan ke `PembuatAkad`, tanda tangan, lalu `akad.cairkan(...)`. Sertakan cabang ditolak yang berhenti tanpa akad. |
+| **7** | Pertahankan penjelasan konsep Mudharabah, tetapi beri catatan bahwa bagi hasil hanya teori/domain dan tidak dihitung oleh program saat ini. |
+| **8** | Pertahankan penjelasan konsep Musyarakah, dengan catatan pembagian hasil/rugi merupakan teori dan tidak dijalankan dalam scope program. |
+| **9** | Box `BankSyariah` pada dasarnya sesuai. Pastikan `daftarPegawai` ditampilkan sebagai hubungan kepemilikan/keanggotaan pegawai bank. |
+| **10** | Box `PegawaiBank` perlu menyertakan `BankSyariah bank` dan relasi ke bank. Jelaskan bahwa proses memeriksa pegawai terdaftar pada bank terkait. |
+| **11** | Hapus field dan relasi `ProfilKeuangan profilKeuangan`. `Nasabah` berisi identitas serta daftar usaha, pengajuan, dan rekening. |
+| **12** | Hapus box `ProfilKeuangan` karena class nested tersebut sudah tidak ada. Jangan pindahkan data keuangan usaha ke `Nasabah`; data analisis ada di `AnalisisKelayakan`. |
+| **13** | Pertahankan box `Usaha`; usaha dimiliki nasabah dan menjadi usaha yang dibiayai oleh pengajuan. |
+| **14** | Pertahankan box `RekeningNasabah`; tampilkan `kredit(long)` sebagai operasi internal yang dipakai saat pencairan. Jangan tampilkan `debit`, karena tidak ada pembayaran/penarikan dalam scope. |
+| **15–16** | Perbarui box `PengajuanPembiayaan` mengikuti field dan method source. `ubahStatus(...)` private. `buatAkad(...)` tetap menjadi method yang dipanggil, tetapi tidak lagi memilih subtype sendiri; ia mendelegasikan ke `PembuatAkad`. |
+| **17** | Pertahankan box `RiwayatPengajuan` sebagai node linked list; tekankan bahwa riwayat saat ini hanya mencatat perubahan status pengajuan, bukan audit log semua aktivitas. |
+| **18** | Pertahankan box `AnalisisKelayakan`. Tambahkan/tegaskan rumus `laba operasional = omzet - biaya langsung - biaya operasional` dan `arus kas tersedia = laba operasional - kewajiban usaha`. `Rekomendasi` adalah enum internal dan hasilnya untuk pegawai, bukan keputusan otomatis. |
+| **19** | Pertahankan `KeputusanPembiayaan`; nyatakan keputusan final ditetapkan pegawai setelah meninjau analisis. Persetujuan/penolakan tidak ditentukan otomatis oleh rekomendasi. |
+| **20–21** | Perbarui `AkadPembiayaan`: hapus `tanggalMulai`, `List<Pencairan>`, `getDaftarPencairan()`, dan `tambahPencairan()`. Tampilkan satu field `Pencairan pencairan`, `tandatangani(...)`, dan `cairkan(...)`. |
+| **22** | Pertahankan `AkadMudharabah`, sesuaikan constructor dengan source, dan tunjukkan override `getJenisAkad()`. |
+| **23** | Pertahankan `AkadMusyarakah`, tetapi hanya tampilkan atribut `modalNasabah` serta getter dan `getJenisAkad()`. Hapus `modalNasabahDisertakan` dan method yang tidak ada di source. |
+| **24** | Perbarui `Pencairan`: hapus `StatusPencairan`, `catatBerhasil()`, dan `catatGagal()`. Nominal diambil dari keputusan/akad; objek merekam satu pencairan penuh yang berhasil. |
+| **25–27** | Hapus `PengajuanService`, `AkadService`, dan `PencairanService`. Ganti bagian ini dengan satu slide box baru `PembuatAkad` (factory) dan penjelasan bahwa tugasnya hanya memilih subtype akad. |
+| **28** | Pertahankan `JenisAkad` dengan `MUDHARABAH` dan `MUSYARAKAH`. |
+| **29** | Pertahankan `StatusPengajuan`: `DIAJUKAN`, `DIPROSES`, `DISETUJUI`, `DITOLAK`. |
+| **30** | Pertahankan `StatusKeputusan`: `DISETUJUI`, `DITOLAK`. |
+| **31** | Pertahankan `StatusAkad`: `DRAFT`, `MENUNGGU_PENCAIRAN`, `DICAIRKAN`. |
+| **32** | Hapus slide `StatusPencairan`; enum ini tidak ada/dipakai di source sekarang. |
+| **33** | Pertahankan nilai rekomendasi, tetapi gambarkan sebagai enum nested `AnalisisKelayakan.Rekomendasi`, bukan class top-level. Jelaskan bahwa rekomendasi ditujukan ke pegawai. |
+| **34** | Ganti tautan eksternal saja dengan diagram relasi UML yang tertanam. Tampilkan relasi pegawai-bank, nasabah-usaha/rekening/pengajuan, riwayat linked list, analisis dan keputusan, factory ke subclass akad, serta satu pencairan per akad. |
+| **35** | Ganti tautan eksternal saja dengan flowchart tertanam: pengajuan → analisis → rekomendasi internal → keputusan pegawai → ditolak/akad → tanda tangan → pencairan penuh → saldo bertambah → selesai. |
+| **36** | Perbarui ringkasan OOP: pertahankan encapsulation, inheritance, polymorphism, dan abstraction pada class akad; tambahkan dependency factory. Hindari klaim komposisi/aggregation yang tidak sesuai dengan relasi yang benar-benar dimodelkan. |
+| **37** | Pertahankan slide demo/video. Pastikan demo yang ditautkan menunjukkan scope terbaru dan tidak menampilkan service, bagi hasil, pembayaran, atau penyelesaian akad. |
+| **38** | Perbarui batasan: data in-memory, tanggal masih `String`, belum ada UI/auth/database/test suite; tidak ada proses pascapencairan. Ganti “belum ada audit log” dengan keterangan bahwa linked list hanya menyimpan perubahan status. Hapus future work “tambah service layer”; itu tidak diperlukan dalam desain sederhana sekarang. |
+| **39** | Pertahankan tautan source code jika masih benar dan dapat diakses. |
+| **40** | Ubah kesimpulan “dari pengajuan hingga penyelesaian akad” menjadi “dari pengajuan hingga pencairan dana”; sebut analisis internal, keputusan pegawai, factory akad, dan riwayat status. |
+| **41** | Pertahankan halaman penutup dan data anggota kelompok. |
+
+### Konten slide 5: entitas utama
+
+Pihak: `BankSyariah`, `PegawaiBank`, `Nasabah`, `Usaha`, dan
+`RekeningNasabah`.
+
+Proses: `PengajuanPembiayaan`, `RiwayatPengajuan`, `AnalisisKelayakan`,
+`KeputusanPembiayaan`, `PembuatAkad`, `AkadPembiayaan`,
+`AkadMudharabah`, `AkadMusyarakah`, dan `Pencairan`.
+
+### Konten slide 6: alur `Main`
+
+```text
+Siapkan bank dan pegawai
+→ siapkan nasabah, usaha, rekening
+→ ajukan pembiayaan dan catat riwayat awal
+→ mulai analisis oleh pegawai bank terdaftar
+→ catat snapshot keuangan usaha, hitung laba dan arus kas
+→ pegawai meninjau rekomendasi dan menetapkan keputusan
+   ├─ ditolak: catat status DITOLAK, selesai tanpa akad
+   └─ disetujui: catat status DISETUJUI
+       → pengajuan meminta PembuatAkad memilih subtype
+       → tandatangani akad
+       → cairkan penuh satu kali ke rekening terdaftar nasabah
+       → saldo bertambah, tampilkan pencairan dan riwayat, selesai
+```
+
+Rekomendasi adalah bantuan internal untuk pegawai. `Main` mengorkestrasi
+demo, `PengajuanPembiayaan` mengelola status/proses pengajuan, dan
+`PembuatAkad` hanya memilih class akad konkret. Operasi bisnis tetap berada
+pada class domain; tidak ada service layer.
+
 ## Ruang lingkup
 
 ### Termasuk
