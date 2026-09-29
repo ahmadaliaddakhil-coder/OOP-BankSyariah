@@ -69,7 +69,8 @@ yang dicairkan. Pencairan dilakukan sekaligus, bukan beberapa tahap.
    dan riwayat bertambah.
 6. Catat snapshot omzet, biaya, dan kewajiban usaha pada
    `AnalisisKelayakan`. Sistem menghitung laba operasional serta arus kas
-   tersedia dan menampilkan rekomendasi internal kepada pegawai.
+   tersedia dan menampilkan rekomendasi internal kepada pegawai. Angka ini
+   adalah input analisis sebelum keputusan, bukan laporan setelah pencairan.
 7. Pegawai meninjau hasil, lalu membuat keputusan pembiayaan secara manual.
    - Jika ditolak, status menjadi `DITOLAK`, riwayat diperbarui, lalu alur
      selesai tanpa akad atau pencairan.
@@ -177,6 +178,9 @@ Enum yang dipakai adalah `JenisAkad`, `StatusPengajuan`,
 - Pencairan yang sama tidak dapat dilakukan dua kali untuk akad yang sama.
 - Setelah pencairan berhasil, saldo rekening bertambah sebesar jumlah
   persetujuan dan status akad menjadi `DICAIRKAN`.
+- Perubahan status pengajuan dilakukan melalui alur internal
+  `mulaiAnalisis` dan `catatKeputusan`; method pengubah status tidak dibuka
+  untuk pemanggil dari luar class.
 
 ## Cara menjalankan
 
@@ -193,6 +197,11 @@ java -cp $build Main
 `Main` saat ini menjalankan skenario Mudharabah. Tepat di dekat pembuatan
 pengajuan tersedia contoh Musyarakah yang dikomentari. Untuk mencobanya,
 komentari pengajuan aktif dan aktifkan contoh Musyarakah.
+
+Skenario demo menggunakan hasil analisis positif dan keputusan disetujui.
+Jalur rekomendasi lain serta penolakan dapat dicoba dengan mengganti nilai
+input dan keputusan secara konsisten; sistem tidak mengubah rekomendasi
+menjadi keputusan otomatis.
 
 ## Contoh hasil saldo
 

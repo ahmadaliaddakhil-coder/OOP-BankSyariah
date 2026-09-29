@@ -20,6 +20,9 @@ class BankSyariah {
   -String namaBank
   -List~PegawaiBank~ daftarPegawai
   +tambahPegawai(PegawaiBank) void
+  +getKodeBank() String
+  +getNamaBank() String
+  +getDaftarPegawai() List~PegawaiBank~
   +memilikiPegawai(PegawaiBank) boolean
 }
 
@@ -28,6 +31,10 @@ class PegawaiBank {
   -String nama
   -String jabatan
   -BankSyariah bank
+  +getNomorPegawai() String
+  +getNama() String
+  +getJabatan() String
+  +getBank() BankSyariah
 }
 
 class Nasabah {
@@ -42,6 +49,14 @@ class Nasabah {
   +tambahUsaha(Usaha) void
   +tambahRekening(RekeningNasabah) void
   +ajukanPembiayaan(PengajuanPembiayaan) void
+  +getDaftarUsaha() List~Usaha~
+  +getDaftarPengajuan() List~PengajuanPembiayaan~
+  +getDaftarRekening() List~RekeningNasabah~
+  +getIdPihak() String
+  +getNamaPihak() String
+  +getAlamatPihak() String
+  +getTanggalLahirPihak() String
+  +getPekerjaanPihak() String
 }
 
 class Usaha {
@@ -50,12 +65,20 @@ class Usaha {
   -String sektor
   -String alamat
   -Nasabah pemilik
+  +getIdUsaha() String
+  +getNamaUsaha() String
+  +getSektor() String
+  +getAlamat() String
+  +getPemilik() Nasabah
 }
 
 class RekeningNasabah {
   -String nomorRekening
   -Nasabah pemilik
   -long saldo
+  +getNomorRekening() String
+  +getPemilik() Nasabah
+  +getSaldo() long
   ~kredit(long) void
 }
 
@@ -77,13 +100,25 @@ class PengajuanPembiayaan {
   -AnalisisKelayakan analisisKelayakan
   -AkadPembiayaan akad
   -PegawaiBank pegawaiPenganalisis
+  +getStatus() StatusPengajuan
+  +getNasabah() Nasabah
+  +getUsaha() Usaha
+  +getNominal() long
+  +getTenorBulan() int
+  +getTujuanPenggunaan() String
+  +getTanggalPengajuan() String
+  +getJenisAkad() JenisAkad
+  +getNisbahBank() int
+  +getNisbahNasabah() int
+  +getModalNasabah() long
+  +getRiwayatPertama() RiwayatPengajuan
   +catatAnalisis(AnalisisKelayakan) void
   +getAnalisisKelayakan() AnalisisKelayakan
   +mulaiAnalisis(PegawaiBank, String) void
   +catatKeputusan(KeputusanPembiayaan) void
   +buatAkad(String, KeputusanPembiayaan, String) AkadPembiayaan
   -ubahStatus(StatusPengajuan, String, String, String) void
-  +getRiwayatPertama() RiwayatPengajuan
+  +getAkad() AkadPembiayaan
 }
 
 class RiwayatPengajuan {
@@ -93,12 +128,16 @@ class RiwayatPengajuan {
   -String pelaku
   -String keterangan
   -RiwayatPengajuan berikutnya
+  +getWaktu() String
+  +getStatusSebelumnya() StatusPengajuan
+  +getStatusSesudahnya() StatusPengajuan
+  +getPelaku() String
+  +getKeterangan() String
   +getBerikutnya() RiwayatPengajuan
   ~setBerikutnya(RiwayatPengajuan) void
 }
 
 class AnalisisKelayakan {
-  <<recommendation to bank staff>>
   -String idAnalisis
   -String tanggalAnalisis
   -PengajuanPembiayaan pengajuan
@@ -108,9 +147,18 @@ class AnalisisKelayakan {
   -long biayaOperasionalBulanan
   -long kewajibanUsahaBulanan
   -String catatanRisiko
+  +getIdAnalisis() String
+  +getTanggalAnalisis() String
+  +getPengajuan() PengajuanPembiayaan
+  +getPegawaiAnalisis() PegawaiBank
+  +getOmzetBulanan() long
+  +getBiayaLangsungBulanan() long
+  +getBiayaOperasionalBulanan() long
+  +getKewajibanUsahaBulanan() long
   +hitungLabaOperasionalBulanan() long
   +hitungArusKasTersediaBulanan() long
   +getRekomendasiInternal() Rekomendasi
+  +getCatatanRisiko() String
 }
 
 class Rekomendasi {
@@ -128,6 +176,13 @@ class KeputusanPembiayaan {
   -StatusKeputusan statusKeputusan
   -long jumlahDisetujui
   -String alasan
+  +getIdKeputusan() String
+  +getTanggalKeputusan() String
+  +getPengajuan() PengajuanPembiayaan
+  +getPegawaiPemutus() PegawaiBank
+  +getStatusKeputusan() StatusKeputusan
+  +getJumlahDisetujui() long
+  +getAlasan() String
 }
 
 class AkadPembiayaan {
@@ -142,7 +197,17 @@ class AkadPembiayaan {
   -String tanggalTandaTangan
   -StatusAkad status
   -Pencairan pencairan
-  getJenisAkad() JenisAkad
+  +getNomorAkad() String
+  +getJenisAkad() JenisAkad
+  +getStatus() StatusAkad
+  +getJumlahDisetujui() long
+  +getPencairan() Pencairan
+  +getBank() BankSyariah
+  +getKeputusan() KeputusanPembiayaan
+  +getTanggalJatuhTempo() String
+  +getNisbahBank() int
+  +getNisbahNasabah() int
+  +getTanggalTandaTangan() String
   +tandatangani(String) void
   +cairkan(String, String, String, RekeningNasabah) Pencairan
 }
@@ -164,6 +229,12 @@ class Pencairan {
   -long jumlah
   -String tanggalPencairan
   -String referensiTransaksi
+  +getJumlah() long
+  +getIdPencairan() String
+  +getAkad() AkadPembiayaan
+  +getTanggalPencairan() String
+  +getRekeningTujuan() RekeningNasabah
+  +getReferensiTransaksi() String
 }
 
 class JenisAkad {
@@ -203,7 +274,6 @@ PengajuanPembiayaan "1" <-- "0..1" AnalisisKelayakan : dianalisis
 AnalisisKelayakan "0..*" --> "1" PegawaiBank : analis
 KeputusanPembiayaan "0..*" --> "1" PengajuanPembiayaan : memutus
 KeputusanPembiayaan "0..*" --> "1" PegawaiBank : pemutus
-PegawaiBank "0..*" --> "1" BankSyariah : bekerja pada
 PengajuanPembiayaan "1" --> "0..1" AkadPembiayaan : memiliki akad
 AkadPembiayaan <|-- AkadMudharabah
 AkadPembiayaan <|-- AkadMusyarakah
@@ -215,7 +285,6 @@ Pencairan "0..*" --> "1" RekeningNasabah : rekening tujuan
 
 PengajuanPembiayaan ..> AkadMudharabah : membuat sesuai jenis akad
 PengajuanPembiayaan ..> AkadMusyarakah : membuat sesuai jenis akad
-PengajuanPembiayaan ..> Rekomendasi : menampilkan ke pegawai bank
 AkadPembiayaan ..> RekeningNasabah : mengkredit saat pencairan
 AkadPembiayaan ..> Pencairan : membuat catatan pencairan
 Main ..> PengajuanPembiayaan : menjalankan alur pengajuan
@@ -223,7 +292,7 @@ Main ..> AkadPembiayaan : menjalankan alur akad dan pencairan
 
 PengajuanPembiayaan ..> JenisAkad
 PengajuanPembiayaan ..> StatusPengajuan
-AnalisisKelayakan ..> Rekomendasi
+AnalisisKelayakan ..> Rekomendasi : enum internal dan rekomendasi pegawai
 RiwayatPengajuan ..> StatusPengajuan
 KeputusanPembiayaan ..> StatusKeputusan
 AkadPembiayaan ..> StatusAkad
@@ -242,7 +311,7 @@ flowchart TD
     B --> C[Buat nasabah, usaha, dan rekening]
     C --> D[Nasabah mengajukan pembiayaan untuk usahanya]
     D --> E{Data pengajuan valid?}
-    E -- Tidak --> X([Perbaiki data sebelum proses dapat dilanjutkan])
+    E -- Tidak --> X([Validasi gagal dan proses dihentikan])
     E -- Ya --> F[Status DIAJUKAN dan catat riwayat awal]
     F --> G[pengajuan.mulaiAnalisis pegawai bank terdaftar dan waktu]
     G --> H[Status DIPROSES dan tambahkan riwayat]
@@ -258,13 +327,13 @@ flowchart TD
     M --> N{Jenis akad pada pengajuan?}
     N -- Mudharabah --> O[pengajuan.buatAkad membuat AkadMudharabah]
     N -- Musyarakah --> P[pengajuan.buatAkad membuat AkadMusyarakah dengan modal nasabah]
-    O --> Q[Hubungkan akad ke pengajuan]
+    O --> Q[Pengajuan menyimpan referensi akad]
     P --> Q
     Q --> R[Tandatangani akad]
     R --> S[Status MENUNGGU_PENCAIRAN]
     S --> T[akad.cairkan satu kali sebesar jumlah disetujui]
-    T --> U{Data pencairan valid dan rekening milik nasabah?}
-    U -- Tidak --> V[Batalkan proses dengan pesan validasi]
+    T --> U{Data pencairan valid dan rekening terdaftar milik nasabah?}
+    U -- Tidak --> V[Validasi gagal dan proses dihentikan]
     V --> X
     U -- Ya --> W[Kredit saldo rekening sebesar jumlah disetujui]
     W --> Y[Catat tanggal dan referensi pencairan]
@@ -280,6 +349,9 @@ dan bukan pesan persetujuan kepada nasabah. Rumus snapshot:
 nol, dan negatif masing-masing menghasilkan rekomendasi
 `LAYAK_DIPERTIMBANGKAN`, `PERLU_TINJAUAN`, dan `TIDAK_DIREKOMENDASIKAN`.
 `Rekomendasi` adalah enum yang didefinisikan di dalam `AnalisisKelayakan`.
+Nilai analisis hanya ditujukan untuk pegawai bank. Pegawai pemutus harus
+terdaftar pada bank yang menangani analisis; pegawai merupakan bagian dari
+bank dan direlasikan langsung pada diagram.
 
 ## Batas alur
 

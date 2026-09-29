@@ -1,8 +1,10 @@
 # Sistem Pembiayaan Modal Syariah
 
-Demo Java untuk mengelola pengajuan pembiayaan usaha menggunakan akad
-Mudharabah atau Musyarakah. Cakupan alur berhenti setelah pencairan penuh ke
-rekening nasabah; perubahan status pengajuan tetap dicatat dengan linked list.
+Demo Java untuk pengajuan pembiayaan usaha menggunakan akad Mudharabah atau
+Musyarakah. Analisis menghitung laba operasional dan arus kas tersedia untuk
+memberi rekomendasi internal kepada pegawai. Pegawai menetapkan keputusan;
+alur demo berhenti setelah pencairan penuh ke rekening nasabah. Riwayat status
+pengajuan dicatat dengan linked list.
 
 ## Menjalankan
 
