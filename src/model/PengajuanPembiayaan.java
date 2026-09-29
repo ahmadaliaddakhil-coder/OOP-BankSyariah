@@ -239,39 +239,16 @@ public class PengajuanPembiayaan {
             String nomorAkad,
             KeputusanPembiayaan keputusan,
             String tanggalJatuhTempo) {
-        if (keputusan == null || keputusan.getPengajuan() != this) {
-            throw new IllegalArgumentException(
-                    "Keputusan tidak sesuai dengan pengajuan ini");
-        }
-        if (keputusan.getStatusKeputusan() != StatusKeputusan.DISETUJUI
-                || status != StatusPengajuan.DISETUJUI) {
-            throw new IllegalStateException(
-                    "Akad hanya dapat dibuat dari pengajuan yang disetujui");
-        }
         if (akad != null) {
             throw new IllegalStateException(
                     "Pengajuan ini sudah memiliki akad");
         }
 
-        BankSyariah bank = keputusan.getPegawaiPemutus().getBank();
-        if (jenisAkad == JenisAkad.MUDHARABAH) {
-            akad = new AkadMudharabah(
-                    nomorAkad,
-                    bank,
-                    keputusan,
-                    tanggalJatuhTempo,
-                    nisbahBank,
-                    nisbahNasabah);
-        } else {
-            akad = new AkadMusyarakah(
-                    nomorAkad,
-                    bank,
-                    keputusan,
-                    tanggalJatuhTempo,
-                    nisbahBank,
-                    nisbahNasabah,
-                    modalNasabah);
-        }
+        akad = PembuatAkad.buatAkad(
+                nomorAkad,
+                this,
+                keputusan,
+                tanggalJatuhTempo);
         return akad;
     }
 

@@ -76,8 +76,8 @@ yang dicairkan. Pencairan dilakukan sekaligus, bukan beberapa tahap.
      selesai tanpa akad atau pencairan.
    - Jika disetujui, status menjadi `DISETUJUI`, riwayat diperbarui, dan akad
      dibuat.
-8. `PengajuanPembiayaan.buatAkad(...)` memilih `AkadMudharabah` atau
-   `AkadMusyarakah` mengikuti jenis akad pada pengajuan.
+8. `PengajuanPembiayaan.buatAkad(...)` meminta `PembuatAkad` membuat
+   `AkadMudharabah` atau `AkadMusyarakah` mengikuti jenis akad pada pengajuan.
 9. Akad ditandatangani sehingga status menjadi `MENUNGGU_PENCAIRAN`.
 10. `AkadPembiayaan.cairkan(...)` mencairkan tepat satu kali dengan nilai sama
     dengan jumlah yang disetujui.
@@ -145,16 +145,20 @@ berjalan mengikuti `getBerikutnya()` sampai tidak ada node selanjutnya.
 | `RiwayatPengajuan` | Node linked list untuk perubahan status pengajuan. |
 | `AnalisisKelayakan` | Menyimpan snapshot keuangan usaha, menghitung laba dan arus kas, serta menampilkan rekomendasi internal untuk pegawai. |
 | `KeputusanPembiayaan` | Menyimpan hasil keputusan dan jumlah yang disetujui. |
+| `PembuatAkad` | Factory sederhana yang memilih class akad konkret berdasarkan jenis akad. |
 | `AkadPembiayaan` | Kelas abstrak untuk data akad, penandatanganan, dan pencairan penuh. |
 | `AkadMudharabah` | Jenis akad Mudharabah. |
 | `AkadMusyarakah` | Jenis akad Musyarakah dan modal nasabah yang direncanakan. |
 | `Pencairan` | Catatan satu kali pencairan penuh yang berhasil; dibuat oleh akad. |
 
-Tidak ada lapisan service terpisah dalam versi sederhana ini. Operasi berada
-pada class yang memiliki data dan bertanggung jawab atas prosesnya:
+Tidak ada lapisan service umum dalam versi sederhana ini. Operasi domain
+berada pada class yang memiliki data dan bertanggung jawab atas prosesnya;
+factory hanya memusatkan pemilihan subtype akad:
 
 - `PengajuanPembiayaan` mengubah status dan menambahkan riwayat, menerima
-  analisis dan keputusan, serta membuat akad yang sesuai.
+  analisis dan keputusan, serta meminta pembuatan akad setelah disetujui.
+- `PembuatAkad` memilih subtype akad; detail pemilihan tidak perlu ditaruh
+  pada alur pengajuan.
 - `AkadPembiayaan` menandatangani akad dan mencairkan dana penuh ke rekening.
 - `Main` menyiapkan data dan memanggil operasi tersebut secara berurutan.
 
@@ -181,6 +185,10 @@ Enum yang dipakai adalah `JenisAkad`, `StatusPengajuan`,
 - Perubahan status pengajuan dilakukan melalui alur internal
   `mulaiAnalisis` dan `catatKeputusan`; method pengubah status tidak dibuka
   untuk pemanggil dari luar class.
+- Pemilihan class akad konkret dipusatkan pada `PembuatAkad`. Jika jenis akad
+  baru ditambahkan, daftar `JenisAkad` dan factory ini perlu diperbarui, lalu
+  class akad barunya dibuat; alur utama pengajuan tetap tidak perlu memuat
+  percabangan jenis akad.
 
 ## Cara menjalankan
 

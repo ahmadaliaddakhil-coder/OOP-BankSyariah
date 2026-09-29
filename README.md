@@ -3,8 +3,8 @@
 Demo Java untuk pengajuan pembiayaan usaha menggunakan akad Mudharabah atau
 Musyarakah. Analisis menghitung laba operasional dan arus kas tersedia untuk
 memberi rekomendasi internal kepada pegawai. Pegawai menetapkan keputusan;
-alur demo berhenti setelah pencairan penuh ke rekening nasabah. Riwayat status
-pengajuan dicatat dengan linked list.
+factory terpisah memilih class akad; alur demo berhenti setelah pencairan
+penuh ke rekening nasabah. Riwayat status pengajuan dicatat dengan linked list.
 
 ## Menjalankan
 

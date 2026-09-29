@@ -185,6 +185,11 @@ class KeputusanPembiayaan {
   +getAlasan() String
 }
 
+class PembuatAkad {
+  <<factory>>
+  +buatAkad(String, PengajuanPembiayaan, KeputusanPembiayaan, String)$ AkadPembiayaan
+}
+
 class AkadPembiayaan {
   <<abstract>>
   -String nomorAkad
@@ -283,8 +288,10 @@ AkadPembiayaan "0..*" --> "1" KeputusanPembiayaan : berdasarkan keputusan
 AkadPembiayaan "1" *-- "0..1" Pencairan : satu kali pencairan
 Pencairan "0..*" --> "1" RekeningNasabah : rekening tujuan
 
-PengajuanPembiayaan ..> AkadMudharabah : membuat sesuai jenis akad
-PengajuanPembiayaan ..> AkadMusyarakah : membuat sesuai jenis akad
+PengajuanPembiayaan ..> PembuatAkad : meminta pembuatan setelah disetujui
+PembuatAkad ..> AkadMudharabah : memilih untuk Mudharabah
+PembuatAkad ..> AkadMusyarakah : memilih untuk Musyarakah
+PembuatAkad ..> JenisAkad : memilih subtype
 AkadPembiayaan ..> RekeningNasabah : mengkredit saat pencairan
 AkadPembiayaan ..> Pencairan : membuat catatan pencairan
 Main ..> PengajuanPembiayaan : menjalankan alur pengajuan
@@ -324,9 +331,10 @@ flowchart TD
     K -- Tidak --> L[Status DITOLAK dan catat riwayat]
     L --> Z1([Selesai tanpa akad dan pencairan])
     K -- Ya --> M[Status DISETUJUI dan catat riwayat]
-    M --> N{Jenis akad pada pengajuan?}
-    N -- Mudharabah --> O[pengajuan.buatAkad membuat AkadMudharabah]
-    N -- Musyarakah --> P[pengajuan.buatAkad membuat AkadMusyarakah dengan modal nasabah]
+    M --> N[pengajuan.buatAkad meminta PembuatAkad]
+    N --> N1{Jenis akad pada pengajuan?}
+    N1 -- Mudharabah --> O[PembuatAkad membuat AkadMudharabah]
+    N1 -- Musyarakah --> P[PembuatAkad membuat AkadMusyarakah dengan modal nasabah]
     O --> Q[Pengajuan menyimpan referensi akad]
     P --> Q
     Q --> R[Tandatangani akad]
