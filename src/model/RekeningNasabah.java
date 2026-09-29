@@ -44,17 +44,6 @@ public class RekeningNasabah {
         saldo = Math.addExact(saldo, jumlah);
     }
 
-    void debit(long jumlah) {
-        if (jumlah <= 0) {
-            throw new IllegalArgumentException(
-                    "Jumlah debit harus lebih besar dari 0");
-        }
-        if (jumlah > saldo) {
-            throw new IllegalStateException("Saldo rekening tidak mencukupi");
-        }
-        saldo = Math.subtractExact(saldo, jumlah);
-    }
-
     @Override
     public String toString() {
         return "Rekening Nasabah"

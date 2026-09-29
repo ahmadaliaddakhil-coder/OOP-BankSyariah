@@ -1,6 +1,7 @@
 package model;
 
 import enums.JenisAkad;
+import enums.StatusKeputusan;
 import enums.StatusPengajuan;
 
 /**
@@ -31,6 +32,7 @@ public class PengajuanPembiayaan {
     private RiwayatPengajuan riwayatTerakhir;
     private AnalisisKelayakan analisisKelayakan;
     private AkadPembiayaan akad;
+    private PegawaiBank pegawaiPenganalisis;
 
     public PengajuanPembiayaan(
             String idPengajuan,
@@ -146,8 +148,25 @@ public class PengajuanPembiayaan {
         return riwayatPertama;
     }
 
-    public AnalisisKelayakan analisisKelayakan() {
+    public AnalisisKelayakan getAnalisisKelayakan() {
         return analisisKelayakan;
+    }
+
+    public void mulaiAnalisis(PegawaiBank pegawai, String waktu) {
+        if (pegawai == null) {
+            throw new IllegalArgumentException("Pegawai tidak boleh null");
+        }
+        if (!pegawai.getBank().memilikiPegawai(pegawai)) {
+            throw new IllegalArgumentException(
+                    "Pegawai penganalisis harus terdaftar pada banknya");
+        }
+
+        ubahStatus(
+                StatusPengajuan.DIPROSES,
+                waktu,
+                pegawai.getNama(),
+                "Analisis pengajuan dimulai");
+        pegawaiPenganalisis = pegawai;
     }
 
     public void catatAnalisis(AnalisisKelayakan analisis) {
@@ -158,6 +177,15 @@ public class PengajuanPembiayaan {
         if (analisis.getPengajuan() != this) {
             throw new IllegalArgumentException(
                     "Analisis tersebut bukan untuk pengajuan ini");
+        }
+        if (analisis.getPegawaiAnalisis() != pegawaiPenganalisis) {
+            throw new IllegalArgumentException(
+                    "Analisis harus dibuat oleh pegawai yang memulai proses");
+        }
+        if (!analisis.getPegawaiAnalisis().getBank()
+                .memilikiPegawai(analisis.getPegawaiAnalisis())) {
+            throw new IllegalArgumentException(
+                    "Pegawai penganalisis harus terdaftar pada banknya");
         }
 
         if (status != StatusPengajuan.DIPROSES) {
@@ -173,38 +201,85 @@ public class PengajuanPembiayaan {
         this.analisisKelayakan = analisis;
     }
 
-    public AnalisisKelayakan getAnalisisKelayakan() {
-        return analisisKelayakan;
-    }
-
     public AkadPembiayaan getAkad() {
         return akad;
     }
 
-    public void catatAkad(AkadPembiayaan akadBaru) {
-        if (akadBaru == null) {
-            throw new IllegalArgumentException("Akad tidak boleh null");
+    public void catatKeputusan(KeputusanPembiayaan keputusan) {
+        if (keputusan == null) {
+            throw new IllegalArgumentException("Keputusan tidak boleh null");
         }
-
-        if (status != StatusPengajuan.DISETUJUI) {
+        if (keputusan.getPengajuan() != this) {
             throw new IllegalStateException(
-                    "Akad hanya dapat dicatat untuk pengajuan yang disetujui");
+                    "Keputusan tersebut bukan untuk pengajuan ini");
         }
-
-        if (akadBaru.getKeputusan().getPengajuan() != this) {
+        if (analisisKelayakan == null) {
+            throw new IllegalStateException(
+                    "Analisis kelayakan harus dicatat sebelum keputusan dibuat");
+        }
+        PegawaiBank pegawai = keputusan.getPegawaiPemutus();
+        if (pegawai.getBank() != analisisKelayakan.getPegawaiAnalisis().getBank()
+                || !pegawai.getBank().memilikiPegawai(pegawai)) {
             throw new IllegalArgumentException(
-                    "Akad tersebut tidak berasal dari pengajuan ini");
+                    "Pegawai pemutus harus terdaftar pada bank yang menangani analisis");
         }
 
+        StatusPengajuan statusBaru = keputusan.getStatusKeputusan()
+                == StatusKeputusan.DISETUJUI
+                        ? StatusPengajuan.DISETUJUI
+                        : StatusPengajuan.DITOLAK;
+        ubahStatus(
+                statusBaru,
+                keputusan.getTanggalKeputusan(),
+                pegawai.getNama(),
+                keputusan.getAlasan());
+    }
+
+    public AkadPembiayaan buatAkad(
+            String nomorAkad,
+            KeputusanPembiayaan keputusan,
+            String tanggalJatuhTempo) {
+        if (keputusan == null || keputusan.getPengajuan() != this) {
+            throw new IllegalArgumentException(
+                    "Keputusan tidak sesuai dengan pengajuan ini");
+        }
+        if (keputusan.getStatusKeputusan() != StatusKeputusan.DISETUJUI
+                || status != StatusPengajuan.DISETUJUI) {
+            throw new IllegalStateException(
+                    "Akad hanya dapat dibuat dari pengajuan yang disetujui");
+        }
         if (akad != null) {
             throw new IllegalStateException(
                     "Pengajuan ini sudah memiliki akad");
         }
 
-        this.akad = akadBaru;
+        BankSyariah bank = keputusan.getPegawaiPemutus().getBank();
+        if (jenisAkad == JenisAkad.MUDHARABAH) {
+            akad = new AkadMudharabah(
+                    nomorAkad,
+                    bank,
+                    keputusan,
+                    tanggalJatuhTempo,
+                    nisbahBank,
+                    nisbahNasabah);
+        } else {
+            akad = new AkadMusyarakah(
+                    nomorAkad,
+                    bank,
+                    keputusan,
+                    tanggalJatuhTempo,
+                    nisbahBank,
+                    nisbahNasabah,
+                    modalNasabah);
+        }
+        return akad;
     }
 
-    public void ubahStatus(StatusPengajuan statusBaru, String waktu, String pelaku, String keterangan) {
+    private void ubahStatus(
+            StatusPengajuan statusBaru,
+            String waktu,
+            String pelaku,
+            String keterangan) {
         if (statusBaru == null) {
             throw new IllegalArgumentException("Status baru tidak boleh null");
         }

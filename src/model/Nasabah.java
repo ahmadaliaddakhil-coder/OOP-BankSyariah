@@ -8,13 +8,11 @@ import java.util.List;
  */
 public class Nasabah {
     private final String nomorId;
-    private String nama;
-    private String alamat;
-    private String tanggalLahir; // Format: yyyy-MM-dd
-    private String pekerjaan;
+    private final String nama;
+    private final String alamat;
+    private final String tanggalLahir; // Format: yyyy-MM-dd
+    private final String pekerjaan;
 
-    // class
-    private final ProfilKeuangan profilKeuangan;
     private final List<Usaha> daftarUsaha;
     private final List<PengajuanPembiayaan> daftarPengajuan;
     private final List<RekeningNasabah> daftarRekening;
@@ -24,14 +22,12 @@ public class Nasabah {
             String nama,
             String alamat,
             String tanggalLahir,
-            String pekerjaan,
-            ProfilKeuangan profilKeuangan) {
+            String pekerjaan) {
         this.nomorId = nomorId;
         this.nama = nama;
         this.alamat = alamat;
         this.tanggalLahir = tanggalLahir;
         this.pekerjaan = pekerjaan;
-        this.profilKeuangan = profilKeuangan;
         this.daftarUsaha = new ArrayList<>();
         this.daftarPengajuan = new ArrayList<>();
         this.daftarRekening = new ArrayList<>();
@@ -119,10 +115,6 @@ public class Nasabah {
         return pekerjaan;
     }
 
-    public ProfilKeuangan getProfilKeuangan() {
-        return profilKeuangan;
-    }
-
     @Override
     public String toString() {
         return "Nasabah: "
@@ -134,85 +126,4 @@ public class Nasabah {
                 + "\nJumlah usaha: " + daftarUsaha.size();
     }
 
-    public static class ProfilKeuangan {
-        private long gajiBulanan;
-        private long pendapatanLainBulanan;
-        private long kewajibanBulanan;
-        private int jumlahTanggungan;
-        private long totalAset;
-        private String tanggalPembaruan; // Format: yyyy-MM-dd
-
-        public ProfilKeuangan(
-                long gajiBulanan,
-                long pendapatanLainBulanan,
-                long kewajibanBulanan,
-                int jumlahTanggungan,
-                long totalAset,
-                String tanggalPembaruan) {
-            this.gajiBulanan = gajiBulanan;
-            this.pendapatanLainBulanan = pendapatanLainBulanan;
-            this.kewajibanBulanan = kewajibanBulanan;
-            this.jumlahTanggungan = jumlahTanggungan;
-            this.totalAset = totalAset;
-            this.tanggalPembaruan = tanggalPembaruan;
-        }
-
-        public long hitungPendapatanBulanan() {
-            return gajiBulanan + pendapatanLainBulanan;
-        }
-
-        public long hitungSisaPendapatanBulanan() {
-            return hitungPendapatanBulanan() - kewajibanBulanan;
-        }
-
-        public void perbaruiData(
-                long gajiBulanan,
-                long pendapatanLainBulanan,
-                long kewajibanBulanan,
-                int jumlahTanggungan,
-                long totalAset,
-                String tanggalPembaruan) {
-            this.gajiBulanan = gajiBulanan;
-            this.pendapatanLainBulanan = pendapatanLainBulanan;
-            this.kewajibanBulanan = kewajibanBulanan;
-            this.jumlahTanggungan = jumlahTanggungan;
-            this.totalAset = totalAset;
-            this.tanggalPembaruan = tanggalPembaruan;
-        }
-
-        public long getGajiBulanan() {
-            return gajiBulanan;
-        }
-
-        public long getPendapatanLainBulanan() {
-            return pendapatanLainBulanan;
-        }
-
-        public long getKewajibanBulanan() {
-            return kewajibanBulanan;
-        }
-
-        public int getJumlahTanggungan() {
-            return jumlahTanggungan;
-        }
-
-        public long getTotalAset() {
-            return totalAset;
-        }
-
-        public String getTanggalPembaruan() {
-            return tanggalPembaruan;
-        }
-
-        @Override
-        public String toString() {
-            return "ProfilKeuangan: "
-                    + "\nGaji bulanan: " + gajiBulanan
-                    + "\nPendapatan lain bulanan: " + pendapatanLainBulanan
-                    + "\nKewajiban bulanan: " + kewajibanBulanan
-                    + "\nJumlah tanggungan: " + jumlahTanggungan
-                    + "\nTotal aset: " + totalAset
-                    + "\nTanggal pembaruan: " + tanggalPembaruan;
-        }
-    }
 }

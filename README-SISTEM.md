@@ -1,348 +1,186 @@
-# Penjelasan Sistem Pembiayaan Modal Syariah
+# Sistem Pembiayaan Modal Syariah
 
-## 1. Gambaran umum
+## Gambaran umum
 
-Proyek ini adalah prototipe pembelajaran berbasis Java untuk menggambarkan
-proses pembiayaan modal usaha di bank syariah dengan dua pilihan akad:
+Proyek ini adalah demo Java sederhana untuk proses pembiayaan modal usaha di
+bank syariah menggunakan akad Mudharabah atau Musyarakah. Alur sistem sengaja
+dibatasi sampai dana berhasil dicairkan ke rekening nasabah. Setelah rekening
+bertambah, demo selesai.
 
-- **Mudharabah**: dalam model proyek, bank menyediakan modal pembiayaan dan
-  nisbah menentukan pembagian laba antara bank dan nasabah. Kerugian usaha
-  normal dicatat sebagai bagian kerugian bank. Temuan kelalaian atau
-  pelanggaran dapat menghasilkan ganti rugi terpisah setelah pemeriksaan
-  dinyatakan terbukti.
-- **Musyarakah**: bank dan nasabah sama-sama berkontribusi modal. Laba dibagi
-  menurut nisbah akad. Alokasi kerugian dalam kode dihitung menurut
-  perbandingan modal bank yang berhasil dicairkan dan modal nasabah yang
-  benar-benar dicatat telah disertakan.
+Sistem tetap mencatat riwayat perubahan status pengajuan menggunakan singly
+linked list. Jadi, walaupun alurnya pendek, pengguna dapat melihat kapan
+pengajuan dibuat, mulai dianalisis, dan disetujui atau ditolak.
 
-Aturan di atas menjelaskan **cara prototipe ini bekerja**, bukan pengganti
-fatwa, nasihat hukum, kebijakan bank, atau penelaahan kepatuhan syariah.
-Ketentuan produk nyata perlu divalidasi oleh pihak yang berwenang.
+Ini adalah model pembelajaran, bukan aplikasi bank produksi atau penetapan
+aturan hukum/fatwa. Seluruh data contoh dibuat di `Main`, hanya berada di
+memori, dan hilang setelah program berhenti.
 
-Program berfokus pada alur objek dan aturan domain, bukan aplikasi bank
-produksi. Data dibuat langsung dalam `Main`, disimpan di memori, dan tidak
-bertahan setelah program berhenti. Belum ada database, antarmuka pengguna,
-autentikasi, integrasi rekening bank, maupun layanan jaringan.
+## Ruang lingkup
 
-## 2. Tujuan dan cakupan
+### Termasuk
 
-### Yang dimodelkan
+- Data bank dan pegawai bank.
+- Data nasabah, usaha, dan rekening.
+- Pengajuan pembiayaan yang dihubungkan dengan usaha milik nasabah.
+- Riwayat status pengajuan dengan linked list.
+- Analisis snapshot keuangan usaha dan rekomendasi internal untuk pegawai.
+- Keputusan pegawai: disetujui atau ditolak.
+- Pembuatan akad sesuai jenis pembiayaan yang disetujui.
+- Penandatanganan akad.
+- Satu kali pencairan penuh sesuai jumlah yang disetujui.
+- Penambahan dana pencairan ke saldo rekening nasabah.
+- Tampilan ringkasan pengajuan, akad, pencairan, saldo akhir, dan riwayat.
 
-1. Data bank, pegawai, nasabah, usaha, dan rekening nasabah.
-2. Pengajuan pembiayaan oleh nasabah untuk usaha miliknya.
-3. Pemeriksaan dan pencatatan analisis kelayakan.
-4. Keputusan pembiayaan: disetujui atau ditolak.
-5. Pembuatan akad Mudharabah atau Musyarakah berdasarkan pengajuan yang
-   disetujui.
-6. Pencairan dana dan perubahan saldo rekening contoh.
-7. Pengiriman serta verifikasi laporan usaha.
-8. Penghitungan bagi hasil, pencatatan kerugian, serta evaluasi
-   kelalaian/pelanggaran.
-9. Pembayaran kembali modal, bagian bagi hasil bank, dan ganti rugi yang
-   ditetapkan setelah temuan terbukti.
-10. Penghentian dini dan penyelesaian akad setelah kewajiban yang tercatat
-    lunas.
-11. Riwayat perubahan status pengajuan menggunakan singly linked list.
+### Tidak termasuk
 
-### Yang tidak dimodelkan
+Setelah batas pencairan, sistem tidak mengelola laporan usaha, verifikasi
+laporan, bagi hasil, pembagian kerugian, evaluasi kelalaian/pelanggaran,
+pembayaran cicilan, penghentian dini, atau pelunasan akad. Fitur-fitur tersebut
+dihapus agar cakupan program tetap fokus.
 
-- Database, penyimpanan permanen, atau pemulihan data.
-- Login, peran/otorisasi pengguna, enkripsi, dan audit log umum.
-- Integrasi dengan rekening atau sistem pembayaran bank sungguhan.
-- Pembukuan dua sisi, saldo bank, pencatatan jurnal, serta rekonsiliasi.
-- Pengiriman/pengeditan ulang laporan yang perlu perbaikan.
-- Mesin aturan produk, kalender pembayaran, denda keterlambatan, pajak, atau
-  proses penagihan.
-- Penetapan otomatis konsekuensi hukum atau syariah dari temuan.
-- Validasi seluruh edge case yang diperlukan untuk produksi.
+Sistem juga belum memakai database, UI, login, jaringan, integrasi bank,
+ledger/pembukuan, atau test suite otomatis.
 
-## 3. Pihak dan objek inti
-
-### Bank dan pegawai
-
-- **`BankSyariah`** menyimpan kode/nama bank dan daftar pegawai.
-- **`PegawaiBank`** terkait ke satu bank. Pegawai digunakan sebagai analis,
-  pemutus pembiayaan, pemeriksa laporan, dan pemeriksa kerugian.
-- Model memeriksa agar pegawai pemutus berasal dari bank yang menerbitkan akad;
-  evaluasi kerugian juga harus dilakukan pegawai dari bank yang sama.
-
-### Nasabah, usaha, rekening
-
-- **`Nasabah`** menyimpan identitas, profil keuangan, daftar usaha, daftar
-  pengajuan, dan daftar rekening.
-- **`Nasabah.ProfilKeuangan`** menyimpan pendapatan, kewajiban bulanan,
-  tanggungan, aset, dan tanggal pembaruan. Ia dapat menghitung pendapatan dan
-  sisa pendapatan bulanan; saat ini bukan mesin penilaian kredit otomatis.
-- **`Usaha`** memiliki satu nasabah sebagai pemilik. Pengajuan harus merujuk
-  usaha yang terdaftar pada nasabah tersebut.
-- **`RekeningNasabah`** menyimpan nomor rekening, pemilik, serta saldo simulasi.
-  Pencairan berhasil mengkredit saldo; pembayaran berhasil mendebit saldo.
-
-### Pengajuan dan riwayat
-
-- **`PengajuanPembiayaan`** mengikat nasabah dan usaha dengan nominal, tenor,
-  tujuan, pilihan akad, nisbah, dan modal nasabah yang direncanakan.
-- Nisbah bank dan nasabah harus berjumlah 100%. Untuk Mudharabah, modal
-  nasabah pada pengajuan harus nol. Untuk Musyarakah, modal nasabah harus
-  positif.
-- Setiap perubahan status pengajuan menambahkan **`RiwayatPengajuan`** baru
-  yang terhubung ke node sebelumnya melalui referensi `berikutnya`.
-- Riwayat tersebut hanya mencatat perubahan status pengajuan, bukan seluruh
-  aktivitas transaksi akad.
-
-### Analisis, keputusan, akad
-
-- **`AnalisisKelayakan`** menyimpan ringkasan, catatan risiko, pegawai analis,
-  dan tanggal analisis.
-- **`KeputusanPembiayaan`** menyimpan hasil, jumlah yang disetujui, pegawai
-  pemutus, alasan, dan tanggal keputusan. Jumlah persetujuan tidak boleh
-  melebihi jumlah pengajuan; keputusan ditolak harus memiliki jumlah
-  persetujuan nol.
-- **`AkadService`** membuat subclass akad yang sesuai dengan jenis akad pada
-  pengajuan yang telah disetujui, lalu menghubungkannya kembali dengan
-  pengajuan.
-- **`AkadPembiayaan`** menjadi kelas dasar abstrak bagi `AkadMudharabah` dan
-  `AkadMusyarakah`. Akad menyimpan keputusan, bank, nisbah, status, daftar
-  pencairan, pembayaran, perhitungan bagi hasil, kerugian, dan evaluasi
-  kerugian.
-- **`AkadMusyarakah`** membedakan modal nasabah yang direncanakan dan jumlah
-  modal aktual yang telah dicatat disertakan.
-
-### Laporan, hasil usaha, dan pembayaran
-
-- **`LaporanUsaha`** menyimpan periode, pendapatan, biaya, status, dan catatan.
-  Laba/rugi dihitung sebagai `pendapatan - biaya`.
-- **`VerifikasiLaporan`** merekam pegawai pemeriksa, hasil, tanggal, dan
-  catatan. Hasilnya mengubah status laporan menjadi `TERVERIFIKASI` atau
-  `PERLU_PERBAIKAN`.
-- **`PerhitunganBagiHasil`** menyimpan laba bersih serta bagian bank dan
-  nasabah. Objek ini hanya dapat dibuat dari laporan terverifikasi/diterima
-  yang menghasilkan laba positif.
-- **`KerugianUsaha`** menyimpan nilai rugi, alokasi pihak-pihak, tanggal, dan
-  keterangan. Objek ini hanya dapat dibuat dari laporan terverifikasi yang
-  menghasilkan rugi.
-- **`EvaluasiKerugian`** menyimpan jenis temuan (kelalaian/pelanggaran), hasil
-  pemeriksaan, petugas, catatan, dan nominal ganti rugi. Ganti rugi adalah
-  kewajiban terpisah, tidak mengganti perhitungan alokasi rugi normal.
-- **`Pencairan`** mencatat nilai pencairan, rekening tujuan, status, dan
-  referensi transaksi.
-- **`Pembayaran`** dapat mencatat tiga komponen secara terpisah: pengembalian
-  modal, bagi hasil, dan ganti rugi. Total komponen mendebit rekening nasabah
-  ketika pembayaran berhasil.
-
-Relasi lengkap antarkelas, kardinalitas, atribut penting, operasi, dan enum
-ditunjukkan di [UML-DAN-FLOWCHART.md](./UML-DAN-FLOWCHART.md).
-
-## 4. Perbedaan alur akad
+## Jenis akad
 
 ### Mudharabah
 
-1. Pengajuan memilih `JenisAkad.MUDHARABAH`.
-2. Modal nasabah pada pengajuan harus `0`.
-3. Service membuat objek `AkadMudharabah`.
-4. Nisbah pada akad digunakan untuk membagi laba yang terverifikasi.
-5. Dalam aturan yang dikodekan, kerugian usaha normal dialokasikan kepada
-   bank. Jika evaluasi menemukan kelalaian/pelanggaran terbukti, pemeriksa
-   dapat menetapkan ganti rugi terpisah; besarnya dimasukkan sebagai nominal,
-   bukan dihitung otomatis.
+Dalam contoh domain ini, bank menyediakan modal pembiayaan dan pengajuan
+memilih `JenisAkad.MUDHARABAH`. Modal nasabah pada data pengajuan harus nol.
+Nisbah bank dan nasabah disimpan sebagai ketentuan akad, tetapi demo tidak
+menghitung atau membagikan laba karena alur berhenti setelah pencairan.
 
 ### Musyarakah
 
-1. Pengajuan memilih `JenisAkad.MUSYARAKAH`.
-2. Modal nasabah yang direncanakan harus lebih besar dari nol.
-3. Service membuat objek `AkadMusyarakah`.
-4. Setelah akad aktif, modal aktual nasabah dicatat dengan
-   `catatModalNasabahDisertakan(...)`. Nilai aktual harus positif dan tidak
-   boleh melebihi nilai yang direncanakan.
-5. Nisbah akad digunakan untuk pembagian laba.
-6. Untuk kerugian, kode menggunakan pencairan bank yang berhasil dan modal
-   aktual nasabah. Bagian bank dihitung secara proporsional dengan pembagian
-   bilangan bulat; sisa rupiah menjadi bagian nasabah.
+Pengajuan memilih `JenisAkad.MUSYARAKAH` dan mencantumkan modal nasabah yang
+direncanakan lebih dari nol. Akad menyimpan nominal modal nasabah tersebut.
+Demo tidak melanjutkan ke pengelolaan hasil usaha.
 
-Rumus teknis alokasi rugi Musyarakah yang ada di source:
+Kedua pilihan memakai jumlah persetujuan dari keputusan bank sebagai jumlah
+yang dicairkan. Pencairan dilakukan sekaligus, bukan beberapa tahap.
 
-```text
-total modal = modal bank berhasil dicairkan + modal nasabah aktual
-bagian bank = total rugi x modal bank / total modal
-bagian nasabah = total rugi - bagian bank
-```
+## Alur sistem
 
-Nilai `modal bank` di sini adalah total pencairan berhasil pada akad. Prototipe
-belum membagi kontribusi modal menurut waktu/periode laporan atau menghitung
-perubahan modal sepanjang umur akad.
+1. Siapkan bank dan pegawai.
+2. Buat nasabah, usaha, dan rekening.
+3. Nasabah mengajukan pembiayaan untuk usaha yang dimilikinya.
+4. Status awal pengajuan `DIAJUKAN` dicatat sebagai node pertama riwayat.
+5. Pegawai bank yang terdaftar memulai analisis; status menjadi `DIPROSES`
+   dan riwayat bertambah.
+6. Catat snapshot omzet, biaya, dan kewajiban usaha pada
+   `AnalisisKelayakan`. Sistem menghitung laba operasional serta arus kas
+   tersedia dan menampilkan rekomendasi internal kepada pegawai.
+7. Pegawai meninjau hasil, lalu membuat keputusan pembiayaan secara manual.
+   - Jika ditolak, status menjadi `DITOLAK`, riwayat diperbarui, lalu alur
+     selesai tanpa akad atau pencairan.
+   - Jika disetujui, status menjadi `DISETUJUI`, riwayat diperbarui, dan akad
+     dibuat.
+8. `PengajuanPembiayaan.buatAkad(...)` memilih `AkadMudharabah` atau
+   `AkadMusyarakah` mengikuti jenis akad pada pengajuan.
+9. Akad ditandatangani sehingga status menjadi `MENUNGGU_PENCAIRAN`.
+10. `AkadPembiayaan.cairkan(...)` mencairkan tepat satu kali dengan nilai sama
+    dengan jumlah yang disetujui.
+11. Jika data pencairan valid, rekening nasabah dikredit dan status akad
+    menjadi `DICAIRKAN`.
+12. Demo menampilkan nominal pencairan, saldo baru, dan riwayat pengajuan,
+    lalu selesai.
 
-## 5. Alur proses bisnis terperinci
+Flowchart visual ada di [UML-DAN-FLOWCHART.md](./UML-DAN-FLOWCHART.md).
 
-### Tahap A — Persiapan dan pengajuan
+## Analisis kelayakan
 
-1. Demo membuat objek bank dan pegawai, lalu mendaftarkan pegawai ke bank.
-2. Nasabah dan profil keuangannya dibuat.
-3. Usaha dibuat dengan nasabah sebagai pemilik, lalu ditambahkan ke daftar
-   usaha nasabah.
-4. Rekening dibuat dan didaftarkan ke nasabah.
-5. Nasabah membuat `PengajuanPembiayaan` untuk salah satu usahanya.
-6. Konstruktor memvalidasi relasi pemilik usaha, nominal, tenor, jenis akad,
-   nisbah, serta aturan modal untuk akad terpilih.
-7. Status awal menjadi `DIAJUKAN` dan node riwayat awal dibuat.
-
-### Tahap B — Analisis dan keputusan
-
-1. `PengajuanService.mulaiAnalisis(...)` mengubah status ke `DIPROSES` dan
-   menambahkan catatan riwayat.
-2. `AnalisisKelayakan` dibuat dan dicatat ke pengajuan.
-3. `KeputusanPembiayaan` dibuat setelah analisis tersedia.
-4. `PengajuanService.catatKeputusan(...)` mengubah status menjadi
-   `DISETUJUI` atau `DITOLAK`, kemudian mencatat transisi tersebut di riwayat.
-5. Jika ditolak, tidak ada akad yang dibuat.
-6. Jika disetujui, `AkadService` memilih subtype akad dan memastikan satu
-   pengajuan tidak menerima akad kedua.
-
-### Tahap C — Penandatanganan dan pencairan
-
-1. Akad baru dimulai pada status `DRAFT`.
-2. `tandatangani(...)` mengubah status ke `MENUNGGU_PENCAIRAN`.
-3. `PencairanService` mendaftarkan pencairan dengan rekening tujuan milik
-   nasabah yang mengajukan.
-4. Total pencairan yang belum gagal tidak boleh melebihi jumlah persetujuan.
-5. Jika berhasil, saldo rekening dikredit, referensi transaksi disimpan, dan
-   akad diaktifkan menjadi `AKTIF`.
-6. Jika gagal, pencairan menjadi `GAGAL` dan saldo tidak berubah.
-7. Untuk Musyarakah, modal aktual nasabah dicatat setelah akad aktif dan
-   sebelum perhitungan kerugian.
-
-Status akad yang tersedia:
+Analisis menggunakan angka bulanan yang dicatat saat pengajuan sedang
+ditinjau. Nilai tersebut menjadi snapshot analisis, bukan laporan berkala
+setelah pencairan.
 
 ```text
-DRAFT -> MENUNGGU_PENCAIRAN -> AKTIF -> SELESAI
-                                  \-> DITERMINASI -> SELESAI
+Laba operasional = omzet - biaya langsung - biaya operasional
+Arus kas tersedia = laba operasional - kewajiban usaha
 ```
 
-`DITERMINASI` berarti aktivitas baru dihentikan; itu bukan berarti kewajiban
-otomatis dihapus. Pembayaran sisa kewajiban masih dapat dilakukan.
+Rekomendasi internal yang ditampilkan kepada pegawai:
 
-### Tahap D — Pelaporan dan verifikasi usaha
+- Arus kas tersedia positif: `LAYAK_DIPERTIMBANGKAN`.
+- Arus kas tersedia nol: `PERLU_TINJAUAN`.
+- Arus kas tersedia negatif: `TIDAK_DIREKOMENDASIKAN`.
 
-1. `LaporanUsaha` hanya dapat dibuat untuk akad `AKTIF`.
-2. Pendapatan dan biaya tidak boleh negatif.
-3. Laporan dimulai dari status `TERKIRIM`.
-4. `mulaiVerifikasi()` mengubah status menjadi `DALAM_VERIFIKASI`.
-5. Pembuatan `VerifikasiLaporan` menetapkan hasil dan mengubah status laporan:
-   - diterima: `TERVERIFIKASI`;
-   - perlu perbaikan: `PERLU_PERBAIKAN`.
-6. Kode belum menyediakan pengeditan dan pengiriman ulang laporan yang perlu
-   perbaikan.
+Hasil ini hanya indikator awal berdasarkan data yang dimasukkan. Sistem tidak
+memverifikasi bukti transaksi dan tidak otomatis menentukan persetujuan,
+jumlah persetujuan, atau keputusan untuk nasabah. Pegawai bank meninjau hasil
+dan catatan risiko lalu menetapkan keputusan. Ambang rekomendasi ini bersifat
+ilustratif untuk demo, bukan kebijakan bank atau fatwa.
 
-### Tahap E — Pemrosesan laba, impas, atau rugi
+## Riwayat pengajuan
 
-Hitung:
+`PengajuanPembiayaan` menyimpan referensi ke node pertama dan terakhir.
+`RiwayatPengajuan` menyimpan:
+
+- waktu perubahan;
+- status sebelumnya dan status baru;
+- pelaku perubahan;
+- keterangan;
+- referensi ke node selanjutnya.
+
+Transisi status yang dicatat:
 
 ```text
-hasil usaha = pendapatan - biaya
+DIAJUKAN -> DIPROSES -> DISETUJUI
+                     \-> DITOLAK
 ```
 
-- **Laba positif:** buat `PerhitunganBagiHasil`, catat pada akad, dan gunakan
-  hasil untuk pembayaran bagi hasil bank.
-- **Nol/impas:** tidak membuat perhitungan bagi hasil maupun objek rugi. Tidak
-  ada distribusi dari hasil periode tersebut.
-- **Rugi negatif:** buat `KerugianUsaha`, lalu daftarkan pada akad. Kerugian
-  yang didaftarkan akan mengurangi sisa pengembalian modal bank menurut bagian
-  kerugian bank.
+Untuk melihat seluruh riwayat, `Main` mulai dari `getRiwayatPertama()` dan
+berjalan mengikuti `getBerikutnya()` sampai tidak ada node selanjutnya.
 
-Laporan, hasil verifikasi, dan hasil perhitungan/kerugian terkait satu sama
-lain melalui referensi objek. Akad menyimpan hasil bagi hasil dan rugi, tetapi
-belum menyimpan daftar laporan dan verifikasi sebagai koleksi tersendiri.
+## Class utama
 
-### Tahap F — Evaluasi kelalaian atau pelanggaran
-
-1. Evaluasi dibuat untuk kerugian usaha yang sudah dicatat pada akad.
-2. Hasil dapat berupa `DALAM_PEMERIKSAAN`, `TIDAK_TERBUKTI`, atau `TERBUKTI`.
-3. Evaluasi yang masih diperiksa dapat ditutup dengan
-   `selesaikanPemeriksaan(...)`.
-4. Hasil akhir hanya dapat berupa `TERBUKTI` atau `TIDAK_TERBUKTI`.
-5. Ganti rugi harus nol ketika tidak terbukti dan harus positif ketika
-   terbukti. Nominalnya tidak boleh melebihi total kerugian pada laporan.
-6. Evaluasi tidak mengubah `bagianKerugianBank` maupun
-   `bagianKerugianNasabah`. Ganti rugi menjadi kewajiban terpisah.
-7. Akad tidak dapat diselesaikan saat masih ada evaluasi `DALAM_PEMERIKSAAN`.
-
-### Tahap G — Pembayaran dan penyelesaian
-
-1. `PembayaranService` mendaftarkan pembayaran pada akad.
-2. Pembayaran dapat berisi satu atau beberapa komponen yang bernilai positif:
-   pengembalian modal, bagian bagi hasil bank, dan ganti rugi.
-3. Total pengembalian modal tidak boleh melebihi sisa modal bank setelah
-   memperhitungkan kerugian bank.
-4. Pembayaran bagi hasil tidak boleh melebihi sisa bagian bank untuk
-   perhitungan yang dirujuk.
-5. Ganti rugi hanya boleh dibayar jika evaluasi terkait tercatat di akad,
-   hasilnya `TERBUKTI`, dan jumlahnya tidak melebihi sisa ganti rugi.
-6. Rekening sumber harus milik nasabah yang terkait dengan akad dan saldo
-   harus cukup.
-7. Pembayaran berhasil mendebit rekening serta dicatat dengan referensi
-   transaksi. Pembayaran gagal tidak mendebit saldo.
-8. Pembayaran dapat dilakukan bertahap. Setelah penghentian dini, pembayaran
-   tetap diizinkan untuk menyelesaikan kewajiban yang tersisa.
-9. Akad dapat menjadi `SELESAI` jika:
-   - sisa pengembalian modal nol;
-   - sisa bagi hasil bank nol;
-   - sisa ganti rugi nol;
-   - tidak ada pencairan atau pembayaran berstatus `DICATAT`; dan
-   - tidak ada evaluasi yang masih dalam pemeriksaan.
-
-## 6. Peran package dan service
-
-| Lokasi | Tanggung jawab |
+| Class | Tanggung jawab |
 |---|---|
-| `src/model` | Entitas domain, relasi objek, validasi, perubahan status, dan perhitungan. |
-| `src/service/PengajuanService.java` | Memulai analisis dan menerapkan keputusan ke status pengajuan. |
-| `src/service/AkadService.java` | Membuat subtype akad dari pengajuan yang disetujui. |
-| `src/service/PencairanService.java` | Mendaftarkan pencairan dan mencatat hasil prosesnya. |
-| `src/service/PembayaranService.java` | Mendaftarkan pembayaran dan mencatat berhasil/gagal. |
-| `src/enums` | Nilai terbatas untuk jenis akad, status, hasil verifikasi, dan temuan. |
-| `src/Main.java` | Titik masuk demo; merangkai pembuatan objek, pemanggilan service, dan output. |
+| `BankSyariah` | Menyimpan identitas bank dan daftar pegawai. |
+| `PegawaiBank` | Mewakili pegawai yang menganalisis atau memutus pengajuan. |
+| `Nasabah` | Menyimpan identitas, usaha, rekening, dan daftar pengajuan. |
+| `Usaha` | Menyimpan identitas usaha dan referensi pemiliknya. |
+| `RekeningNasabah` | Menyimpan saldo contoh dan menyediakan operasi kredit internal. |
+| `PengajuanPembiayaan` | Menyimpan kebutuhan modal, jenis akad, status, analisis, akad, dan riwayat; juga memulai analisis, mencatat keputusan, dan membuat akad. |
+| `RiwayatPengajuan` | Node linked list untuk perubahan status pengajuan. |
+| `AnalisisKelayakan` | Menyimpan snapshot keuangan usaha, menghitung laba dan arus kas, serta menampilkan rekomendasi internal untuk pegawai. |
+| `KeputusanPembiayaan` | Menyimpan hasil keputusan dan jumlah yang disetujui. |
+| `AkadPembiayaan` | Kelas abstrak untuk data akad, penandatanganan, dan pencairan penuh. |
+| `AkadMudharabah` | Jenis akad Mudharabah. |
+| `AkadMusyarakah` | Jenis akad Musyarakah dan modal nasabah yang direncanakan. |
+| `Pencairan` | Catatan satu kali pencairan penuh yang berhasil; dibuat oleh akad. |
 
-Service berperan sebagai penghubung operasi, sedangkan validasi utama dan
-perubahan saldo/status tetap dilakukan oleh objek domain.
+Tidak ada lapisan service terpisah dalam versi sederhana ini. Operasi berada
+pada class yang memiliki data dan bertanggung jawab atas prosesnya:
 
-## 7. Skenario demo yang disiapkan
+- `PengajuanPembiayaan` mengubah status dan menambahkan riwayat, menerima
+  analisis dan keputusan, serta membuat akad yang sesuai.
+- `AkadPembiayaan` menandatangani akad dan mencairkan dana penuh ke rekening.
+- `Main` menyiapkan data dan memanggil operasi tersebut secara berurutan.
 
-### Skenario yang saat ini aktif
+Enum yang dipakai adalah `JenisAkad`, `StatusPengajuan`,
+`StatusKeputusan`, `StatusAkad`, serta `AnalisisKelayakan.Rekomendasi`.
 
-`Main` menjalankan satu skenario:
+## Aturan dan validasi penting
 
-1. Pengajuan Mudharabah Rp80.000.000 dengan nisbah bank 40% dan nasabah 60%.
-2. Pencairan berhasil seluruhnya.
-3. Laporan usaha menunjukkan rugi Rp10.000.000.
-4. Rugi normal Mudharabah dibebankan kepada bank dalam model ini; sisa modal
-   yang dikembalikan menjadi Rp70.000.000.
-5. Pemeriksaan kelalaian dimulai, lalu hasil contoh ditetapkan `TERBUKTI`
-   dengan ganti rugi Rp2.000.000.
-6. Akad dihentikan dini. Pembayaran tetap berjalan.
-7. Nasabah membayar Rp70.000.000 sebagai pengembalian modal dan Rp2.000.000
-   sebagai ganti rugi.
-8. Sisa kewajiban tercatat nol dan akad diselesaikan.
+- Usaha pada pengajuan harus dimiliki dan terdaftar pada nasabah pengaju.
+- Nisbah bank dan nasabah harus berjumlah 100%.
+- Modal nasabah harus nol untuk Mudharabah dan lebih dari nol untuk
+  Musyarakah.
+- Pegawai penganalisis dan pemutus harus tercatat sebagai pegawai bank yang
+  menangani pengajuan.
+- Akad hanya dibuat dari keputusan yang disetujui dan memakai bank pegawai
+  pemutus.
+- Jumlah pencairan tidak dimasukkan terpisah: sistem memakai jumlah
+  persetujuan agar pencairan selalu penuh dan tidak melebihi keputusan.
+- Pencairan hanya dapat dilakukan pada akad berstatus `MENUNGGU_PENCAIRAN`.
+- Pencairan hanya menuju rekening terdaftar milik nasabah pengaju.
+- Pencairan yang sama tidak dapat dilakukan dua kali untuk akad yang sama.
+- Setelah pencairan berhasil, saldo rekening bertambah sebesar jumlah
+  persetujuan dan status akad menjadi `DICAIRKAN`.
 
-Saldo rekening adalah simulasi arus dana pada satu rekening nasabah. Nilainya
-tidak mencerminkan pembukuan lengkap bank dan tidak membuktikan penyelesaian
-finansial di sistem nyata.
+## Cara menjalankan
 
-### Skenario alternatif dalam komentar
-
-`Main.java` juga menyediakan potongan alternatif untuk:
-
-- akad Musyarakah beserta pencatatan modal nasabah;
-- laporan untung dan perhitungan bagi hasil;
-- laporan impas tanpa distribusi;
-- pembayaran yang disesuaikan dengan kewajiban skenario terkait.
-
-Blok-blok itu adalah contoh kode yang dapat diaktifkan. Satu eksekusi `Main`
-belum menjalankan semua alternatif sekaligus; ketika berpindah skenario,
-blok laporan/evaluasi/pembayaran harus disesuaikan bersama agar tidak
-mencampur objek atau nilai dari skenario berbeda.
-
-## 8. Cara menjalankan
-
-Dari PowerShell di folder proyek:
+Dari PowerShell pada folder proyek:
 
 ```powershell
 $build = Join-Path $env:TEMP 'java-project-build'
@@ -352,34 +190,32 @@ javac -Xlint:all -d $build $files
 java -cp $build Main
 ```
 
-Output akan menampilkan objek dan tahap demo secara berurutan. Kode keluar
-kompilasi bukan pengganti pengujian terpisah untuk semua alternatif.
+`Main` saat ini menjalankan skenario Mudharabah. Tepat di dekat pembuatan
+pengajuan tersedia contoh Musyarakah yang dikomentari. Untuk mencobanya,
+komentari pengajuan aktif dan aktifkan contoh Musyarakah.
 
-## 9. Batasan dan pengembangan berikutnya
+## Contoh hasil saldo
 
-Beberapa batasan sengaja dipertahankan agar demo tetap sederhana:
+Data demo dimulai dengan saldo Rp1.000.000 dan mencairkan Rp80.000.000:
 
-- Input masih hardcode di `Main`; tanggal dan waktu berupa `String`.
-- Penyimpanan objek hanya di memori. Tidak ada database atau serialisasi.
-- Belum ada test suite aktif; perubahan aturan perlu dicoba dengan skenario
-  kompilasi/eksekusi yang sesuai.
-- Tidak ada ID generator atau pemeriksaan keunikan lintas seluruh sistem;
-  beberapa model hanya memeriksa duplikasi dalam koleksi akad tertentu.
-- Riwayat linked list hanya mencakup status pengajuan; belum ada log umum
-  untuk pencairan, pembayaran, perubahan akad, atau perubahan evaluasi.
-- Tidak ada fasilitas laporan ulang ketika verifikasi meminta perbaikan.
-- Penghitungan sisa modal menjumlahkan pencairan, alokasi kerugian bank, dan
-  pembayaran berhasil; belum merekonstruksi posisi modal berdasarkan urutan
-  waktu setiap transaksi/periode.
-- Saldo rekening hanya satu sisi simulasi. Belum ada ledger bank atau transaksi
-  atomik yang menjamin pembaruan saldo dan catatan transaksi bersama-sama.
-- Penghentian dini saat ini memindahkan akad ke `DITERMINASI`; pembayaran
-  diperbolehkan untuk melunasi kewajiban, sementara operasi baru seperti
-  pencatatan laporan atau kerugian tetap mensyaratkan akad aktif.
-- Asumsi perhitungan nisbah, pembulatan, alokasi rugi, dan nominal ganti rugi
-  mengikuti kode demo serta perlu ditinjau sebelum dipakai untuk kebutuhan
-  produk sebenarnya.
+```text
+Saldo sebelum pencairan: Rp1.000.000
+Jumlah pencairan:        Rp80.000.000
+Saldo sesudah pencairan: Rp81.000.000
+```
 
-Diagram visual struktur kelas dan alur tersedia di
-[UML-DAN-FLOWCHART.md](./UML-DAN-FLOWCHART.md). Untuk ringkasan singkat proyek
-dan langkah menjalankan, lihat [README.md](./README.md).
+## Struktur direktori
+
+```text
+src/
+  Main.java
+  enums/
+  model/
+README.md
+README-SISTEM.md
+UML-DAN-FLOWCHART.md
+```
+
+Diagram kelas dan flowchart Mermaid tersedia pada
+[UML-DAN-FLOWCHART.md](./UML-DAN-FLOWCHART.md). Untuk pengantar singkat,
+lihat [README.md](./README.md).

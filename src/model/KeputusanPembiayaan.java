@@ -7,13 +7,13 @@ import enums.StatusKeputusan;
  */
 public class KeputusanPembiayaan {
 
-    private String idKeputusan;
-    private String tanggalKeputusan;
-    private PengajuanPembiayaan pengajuan;
-    private PegawaiBank pegawaiPemutus;
-    private StatusKeputusan statusKeputusan;
-    private long jumlahDisetujui;
-    private String alasan;
+    private final String idKeputusan;
+    private final String tanggalKeputusan;
+    private final PengajuanPembiayaan pengajuan;
+    private final PegawaiBank pegawaiPemutus;
+    private final StatusKeputusan statusKeputusan;
+    private final long jumlahDisetujui;
+    private final String alasan;
 
     public KeputusanPembiayaan(String idKeputusan, String tanggalKeputusan, PengajuanPembiayaan pengajuan,
             PegawaiBank pegawaiPemutus, StatusKeputusan statusKeputusan, long jumlahDisetujui, String alasan) {
@@ -23,6 +23,10 @@ public class KeputusanPembiayaan {
         }
         if (pegawaiPemutus == null) {
             throw new IllegalArgumentException("Pegawai tidak boleh null");
+        }
+        if (!pegawaiPemutus.getBank().memilikiPegawai(pegawaiPemutus)) {
+            throw new IllegalArgumentException(
+                    "Pegawai pemutus harus terdaftar pada banknya");
         }
         if (statusKeputusan == null) {
             throw new IllegalArgumentException("Status keputusan tidak boleh null");

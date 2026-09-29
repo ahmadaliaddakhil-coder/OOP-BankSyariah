@@ -44,6 +44,12 @@ public class BankSyariah {
         return new ArrayList<>(daftarPegawai);
     }
 
+    public boolean memilikiPegawai(PegawaiBank pegawai) {
+        return pegawai != null
+                && pegawai.getBank() == this
+                && daftarPegawai.contains(pegawai);
+    }
+
     @Override
     public String toString() {
         return "Bank Syariah: "
