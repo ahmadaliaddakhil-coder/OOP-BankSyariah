@@ -43,6 +43,7 @@ class Nasabah {
   -String alamat
   -String tanggalLahir
   -String pekerjaan
+  -long gajiBulanan
   -List~Usaha~ daftarUsaha
   -List~PengajuanPembiayaan~ daftarPengajuan
   -List~RekeningNasabah~ daftarRekening
@@ -57,6 +58,7 @@ class Nasabah {
   +getAlamatPihak() String
   +getTanggalLahirPihak() String
   +getPekerjaanPihak() String
+  +getGajiBulanan() long
 }
 
 class Usaha {
@@ -94,6 +96,10 @@ class PengajuanPembiayaan {
   -int nisbahBank
   -int nisbahNasabah
   -long modalNasabah
+  -long omzetBulananDilaporkan
+  -long biayaLangsungBulananDilaporkan
+  -long biayaOperasionalBulananDilaporkan
+  -long kewajibanUsahaBulananDilaporkan
   -StatusPengajuan status
   -RiwayatPengajuan riwayatPertama
   -RiwayatPengajuan riwayatTerakhir
@@ -111,6 +117,10 @@ class PengajuanPembiayaan {
   +getNisbahBank() int
   +getNisbahNasabah() int
   +getModalNasabah() long
+  +getOmzetBulananDilaporkan() long
+  +getBiayaLangsungBulananDilaporkan() long
+  +getBiayaOperasionalBulananDilaporkan() long
+  +getKewajibanUsahaBulananDilaporkan() long
   +getRiwayatPertama() RiwayatPengajuan
   +catatAnalisis(AnalisisKelayakan) void
   +getAnalisisKelayakan() AnalisisKelayakan
@@ -362,42 +372,44 @@ menampilkan validasi dan perubahan status secara lebih rinci.
 ```mermaid
 flowchart TD
     A([Mulai]) --> B[Siapkan bank dan pegawai terdaftar]
-    B --> C[Siapkan nasabah, usaha, rekening, dan pengajuan]
-    C --> D[Mulai analisis oleh pegawai]
-    D --> E[Catat snapshot keuangan usaha]
-    E --> F[Hitung laba operasional dan arus kas tersedia]
-    F --> G[Berikan rekomendasi internal kepada pegawai]
-    G --> H[Pegawai menetapkan keputusan]
+    B --> C[Nasabah isi data dan laporan keuangan bulanan]
+    C --> D[Validasi dan simpan pengajuan]
+    D --> E[Pegawai memeriksa laporan nasabah]
+    E --> F[Catat analisis dan hasil perhitungan]
+    F --> G[Tampilkan rekomendasi sebagai bahan pertimbangan]
+    G --> H[Pegawai menetapkan keputusan pada langkah terpisah]
     H --> I{Disetujui?}
     I -- Tidak --> J[Catat status DITOLAK dan riwayat]
     J --> K([Selesai tanpa akad])
     I -- Ya --> L[Catat status DISETUJUI dan riwayat]
     L --> M[pengajuan.buatAkad meminta PembuatAkad]
     M --> N{Jenis akad}
-    N -- Mudharabah --> O[Buat AkadMudharabah]
-    N -- Musyarakah --> P[Buat AkadMusyarakah]
-    O --> Q[Tandatangani akad]
+    N -- Mudharabah --> O[Buat AkadMudharabah berstatus DRAFT]
+    N -- Musyarakah --> P[Buat AkadMusyarakah berstatus DRAFT]
+    O --> Q[Pegawai menandatangani pada langkah terpisah]
     P --> Q
-    Q --> R[Cairkan dana penuh satu kali]
-    R --> S[Kredit rekening nasabah]
-    S --> T[Tampilkan pencairan, saldo, dan riwayat]
-    T --> U([Selesai])
+    Q --> R[Akad MENUNGGU_PENCAIRAN]
+    R --> S[Pegawai memproses pencairan]
+    S --> T[Kredit rekening nasabah satu kali]
+    T --> U[Tampilkan pencairan, saldo, dan riwayat]
+    U --> V([Selesai])
 ```
 
 ```mermaid
 flowchart TD
     A([Mulai]) --> B[Siapkan bank dan pegawai]
     B --> C[Buat nasabah, usaha, dan rekening]
-    C --> D[Nasabah mengajukan pembiayaan untuk usahanya]
+    C --> D[Nasabah mengisi data usaha, keuangan bulanan, dan pengajuan]
     D --> E{Data pengajuan valid?}
     E -- Tidak --> X([Validasi gagal dan proses dihentikan])
     E -- Ya --> F[Status DIAJUKAN dan catat riwayat awal]
     F --> G[pengajuan.mulaiAnalisis pegawai bank terdaftar dan waktu]
     G --> H[Status DIPROSES dan tambahkan riwayat]
-    H --> I[Catat snapshot omzet biaya dan kewajiban usaha]
-    I --> I1[Hitung laba operasional dan arus kas tersedia]
-    I1 --> I2[Tampilkan rekomendasi internal kepada pegawai]
-    I2 --> J[Pegawai meninjau hasil dan menetapkan keputusan]
+    H --> I[Pegawai memeriksa data keuangan yang dilaporkan nasabah]
+    I --> I1[Gunakan data terverifikasi untuk mencatat analisis]
+    I1 --> I2[Hitung laba operasional dan arus kas tersedia]
+    I2 --> I3[Tampilkan rekomendasi internal kepada pegawai]
+    I3 --> J[Pegawai meninjau hasil dan menetapkan keputusan]
     J --> J1[pengajuan.catatKeputusan]
     J1 --> K{Disetujui?}
     K -- Tidak --> L[Status DITOLAK dan catat riwayat]
@@ -422,8 +434,13 @@ flowchart TD
     AB --> Z([Selesai setelah pencairan])
 ```
 
-Rekomendasi adalah alat bantu internal bagi pegawai, bukan keputusan otomatis
-dan bukan pesan persetujuan kepada nasabah. Rumus snapshot:
+Nasabah mengisi omzet, biaya langsung, biaya operasional, dan kewajiban usaha
+bulanan ketika mengajukan pembiayaan. Nilai tersebut disimpan pada
+`PengajuanPembiayaan`, ditampilkan kembali sebagai nilai laporan, lalu disalin
+ke formulir analisis agar pegawai dapat memeriksa atau menyesuaikannya. Tidak
+ada angka contoh yang otomatis dipakai dalam GUI. Rekomendasi adalah alat
+bantu internal berdasarkan angka yang telah diperiksa pegawai, bukan keputusan
+otomatis dan bukan pesan persetujuan kepada nasabah. Rumus:
 `laba operasional = omzet - biaya langsung - biaya operasional` dan
 `arus kas tersedia = laba operasional - kewajiban usaha`. Hasil positif,
 nol, dan negatif masing-masing menghasilkan rekomendasi
@@ -432,6 +449,11 @@ nol, dan negatif masing-masing menghasilkan rekomendasi
 Nilai analisis hanya ditujukan untuk pegawai bank. Pegawai pemutus harus
 terdaftar pada bank yang menangani analisis; pegawai merupakan bagian dari
 bank dan direlasikan langsung pada diagram.
+
+GUI memisahkan aksi pemeriksaan, penetapan keputusan, pembuatan draft akad,
+penandatanganan, dan pencairan. Dengan demikian status `DIPROSES`, akad
+`DRAFT`, dan akad `MENUNGGU_PENCAIRAN` tetap terlihat sebagai tahap tersendiri
+sebelum pengguna melanjutkan.
 
 ## Batas alur
 

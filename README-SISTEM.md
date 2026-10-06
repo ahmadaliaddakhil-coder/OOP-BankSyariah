@@ -7,13 +7,23 @@ bank syariah menggunakan akad Mudharabah atau Musyarakah. Alur sistem sengaja
 dibatasi sampai dana berhasil dicairkan ke rekening nasabah. Setelah rekening
 bertambah, demo selesai.
 
+Pada GUI, nasabah melaporkan gaji yang diterima per bulan pada profil serta
+omzet, biaya langsung, biaya operasional, dan kewajiban usaha per bulan pada
+pengajuan. Laporan usaha disimpan pada `PengajuanPembiayaan`; pegawai
+memeriksanya dan dapat mencatat nilai terverifikasi pada analisis. Pegawai juga
+dapat melihat identitas, pekerjaan, gaji, rekening, data usaha, dan pembiayaan.
+Angka masukan tidak otomatis diverifikasi. Tanpa bukti pendapatan, riwayat
+kredit, pengeluaran pribadi, atau jadwal pembayaran, aplikasi tidak
+menyimpulkan kredibilitas atau kemampuan bayar.
+
 Sistem tetap mencatat riwayat perubahan status pengajuan menggunakan singly
 linked list. Jadi, walaupun alurnya pendek, pengguna dapat melihat kapan
 pengajuan dibuat, mulai dianalisis, dan disetujui atau ditolak.
 
 Ini adalah model pembelajaran, bukan aplikasi bank produksi atau penetapan
-aturan hukum/fatwa. Seluruh data contoh dibuat di `Main`, hanya berada di
-memori, dan hilang setelah program berhenti.
+aturan hukum/fatwa. Data untuk demo konsol disiapkan di `Main`; data pada GUI
+dimasukkan melalui formulir. Keduanya hanya berada di memori dan hilang setelah
+program berhenti.
 
 ## Panduan revisi presentasi PDF
 
@@ -140,23 +150,28 @@ yang dicairkan. Pencairan dilakukan sekaligus, bukan beberapa tahap.
 
 1. Siapkan bank dan pegawai.
 2. Buat nasabah, usaha, dan rekening.
-3. Nasabah mengajukan pembiayaan untuk usaha yang dimilikinya.
+3. Nasabah mengisi data usaha, melaporkan keuangan bulanan, lalu mengajukan
+   pembiayaan untuk usaha yang dimilikinya. Laporan keuangan disimpan pada
+   `PengajuanPembiayaan`.
 4. Status awal pengajuan `DIAJUKAN` dicatat sebagai node pertama riwayat.
-5. Pegawai bank yang terdaftar memulai analisis; status menjadi `DIPROSES`
-   dan riwayat bertambah.
-6. Catat snapshot omzet, biaya, dan kewajiban usaha pada
+5. Pegawai bank yang terdaftar memeriksa laporan keuangan nasabah. Form
+   analisis mengambil nilai awal dari pengajuan, lalu pegawai dapat
+   mengoreksinya berdasarkan pemeriksaan.
+6. Setelah pegawai mengonfirmasi pemeriksaan, status menjadi `DIPROSES`,
+   riwayat bertambah, dan nilai yang telah diperiksa dicatat pada
    `AnalisisKelayakan`. Sistem menghitung laba operasional serta arus kas
-   tersedia dan menampilkan rekomendasi internal kepada pegawai. Angka ini
-   adalah input analisis sebelum keputusan, bukan laporan setelah pencairan.
-7. Pegawai meninjau hasil, lalu membuat keputusan pembiayaan secara manual.
+   tersedia dan menampilkan rekomendasi internal.
+7. Pegawai menetapkan keputusan pada langkah terpisah setelah membaca hasil.
    - Jika ditolak, status menjadi `DITOLAK`, riwayat diperbarui, lalu alur
      selesai tanpa akad atau pencairan.
-   - Jika disetujui, status menjadi `DISETUJUI`, riwayat diperbarui, dan akad
-     dibuat.
-8. `PengajuanPembiayaan.buatAkad(...)` meminta `PembuatAkad` membuat
+   - Jika disetujui, status menjadi `DISETUJUI` dan riwayat diperbarui.
+8. Pegawai membuat draft akad pada langkah terpisah.
+   `PengajuanPembiayaan.buatAkad(...)` meminta `PembuatAkad` membuat
    `AkadMudharabah` atau `AkadMusyarakah` mengikuti jenis akad pada pengajuan.
-9. Akad ditandatangani sehingga status menjadi `MENUNGGU_PENCAIRAN`.
-10. `AkadPembiayaan.cairkan(...)` mencairkan tepat satu kali dengan nilai sama
+9. Pegawai menandatangani draft akad; status berubah menjadi
+   `MENUNGGU_PENCAIRAN`.
+10. Pegawai memproses pencairan. `AkadPembiayaan.cairkan(...)` mencairkan tepat
+    satu kali dengan nilai sama
     dengan jumlah yang disetujui.
 11. Jika data pencairan valid, rekening nasabah dikredit dan status akad
     menjadi `DICAIRKAN`.
@@ -167,9 +182,10 @@ Flowchart visual ada di [UML-DAN-FLOWCHART.md](./UML-DAN-FLOWCHART.md).
 
 ## Analisis kelayakan
 
-Analisis menggunakan angka bulanan yang dicatat saat pengajuan sedang
-ditinjau. Nilai tersebut menjadi snapshot analisis, bukan laporan berkala
-setelah pencairan.
+Analisis memakai angka bulanan yang dilaporkan nasabah pada pengajuan lalu
+ditinjau atau dikoreksi oleh pegawai. Nilai hasil pemeriksaan menjadi snapshot
+analisis; nilai laporan asli tetap tersimpan terpisah pada pengajuan. Keduanya
+bukan laporan berkala setelah pencairan.
 
 ```text
 Laba operasional = omzet - biaya langsung - biaya operasional
@@ -215,10 +231,10 @@ berjalan mengikuti `getBerikutnya()` sampai tidak ada node selanjutnya.
 |---|---|
 | `BankSyariah` | Menyimpan identitas bank dan daftar pegawai. |
 | `PegawaiBank` | Mewakili pegawai yang menganalisis atau memutus pengajuan. |
-| `Nasabah` | Menyimpan identitas, usaha, rekening, dan daftar pengajuan. |
+| `Nasabah` | Menyimpan identitas, pekerjaan, gaji bulanan yang dilaporkan, usaha, rekening, dan daftar pengajuan. |
 | `Usaha` | Menyimpan identitas usaha dan referensi pemiliknya. |
 | `RekeningNasabah` | Menyimpan saldo contoh dan menyediakan operasi kredit internal. |
-| `PengajuanPembiayaan` | Menyimpan kebutuhan modal, jenis akad, status, analisis, akad, dan riwayat; juga memulai analisis, mencatat keputusan, dan membuat akad. |
+| `PengajuanPembiayaan` | Menyimpan kebutuhan modal, laporan keuangan nasabah, jenis akad, status, analisis, akad, dan riwayat; juga memulai analisis, mencatat keputusan, dan membuat akad. |
 | `RiwayatPengajuan` | Node linked list untuk perubahan status pengajuan. |
 | `AnalisisKelayakan` | Menyimpan snapshot keuangan usaha, menghitung laba dan arus kas, serta menampilkan rekomendasi internal untuk pegawai. |
 | `KeputusanPembiayaan` | Menyimpan hasil keputusan dan jumlah yang disetujui. |
@@ -269,24 +285,37 @@ Enum yang dipakai adalah `JenisAkad`, `StatusPengajuan`,
 
 ## Cara menjalankan
 
-Dari PowerShell pada folder proyek:
+Dibutuhkan JDK 21 atau yang lebih baru. Maven akan disiapkan otomatis oleh
+Maven Wrapper. Jalankan GUI JavaFX dari PowerShell pada folder proyek:
 
 ```powershell
-$build = Join-Path $env:TEMP 'java-project-build'
-New-Item -ItemType Directory -Force -Path $build | Out-Null
-$files = Get-ChildItem -Path 'src' -Recurse -Filter '*.java' | ForEach-Object { $_.FullName }
-javac -Xlint:all -d $build $files
-java -cp $build Main
+.\mvnw.cmd javafx:run
 ```
 
-`Main` saat ini menjalankan skenario Mudharabah. Tepat di dekat pembuatan
-pengajuan tersedia contoh Musyarakah yang dikomentari. Untuk mencobanya,
-komentari pengajuan aktif dan aktifkan contoh Musyarakah.
+Menu **Tampilan** memisahkan sisi **Nasabah** dari sisi **Pegawai** tanpa login
+atau penyimpanan persisten. Sisi nasabah mengumpulkan data, mengajukan, dan
+melihat status; sisi pegawai mencari pengajuan, memeriksa data keuangan,
+mencatat analisis, menetapkan keputusan, membuat draft akad, menandatangani
+akad, lalu memproses pencairan sebagai langkah-langkah terpisah. Karena ini
+demo tanpa login, kedua sisi melihat daftar pengajuan yang sama. Semua data GUI
+hanya tersimpan selama aplikasi berjalan.
 
-Skenario demo menggunakan hasil analisis positif dan keputusan disetujui.
-Jalur rekomendasi lain serta penolakan dapat dicoba dengan mengganti nilai
-input dan keputusan secara konsisten; sistem tidak mengubah rekomendasi
-menjadi keputusan otomatis.
+Jalankan tes rumus, data laporan keuangan, dan urutan alur domain dengan:
+
+```powershell
+.\mvnw.cmd test
+```
+
+Demo konsol lama tetap dapat dijalankan setelah proyek dikompilasi:
+
+```powershell
+.\mvnw.cmd package
+java -cp target/classes Main
+```
+
+`Main` menjalankan skenario Mudharabah. Tepat di dekat pembuatan pengajuan
+tersedia contoh Musyarakah yang dikomentari. Sistem menampilkan rekomendasi
+analisis sebagai bahan pertimbangan; pegawai tetap menetapkan keputusan.
 
 ## Contoh hasil saldo
 
