@@ -300,11 +300,17 @@ akad, lalu memproses pencairan sebagai langkah-langkah terpisah. Karena ini
 demo tanpa login, kedua sisi melihat daftar pengajuan yang sama. Semua data GUI
 hanya tersimpan selama aplikasi berjalan.
 
-Jalankan tes rumus, data laporan keuangan, dan urutan alur domain dengan:
+Kompilasi proyek dengan:
 
 ```powershell
 .\mvnw.cmd test
 ```
+
+Source tes di `src/test` tidak disertakan pada proyek saat ini, sehingga
+perintah tersebut hanya mengompilasi source aplikasi dan tidak menjalankan tes
+otomatis. Struktur tampilan utama dan seluruh formulir JavaFX didefinisikan
+sebagai FXML di `src/main/resources/views` dan dapat dibuka dengan JavaFX Scene
+Builder. Style tampilan dikelola terpisah di `src/main/resources/css`.
 
 Demo konsol lama tetap dapat dijalankan setelah proyek dikompilasi:
 

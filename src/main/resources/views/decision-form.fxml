@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+
+<ScrollPane fitToWidth="true" prefViewportHeight="580.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+        <GridPane fx:id="formGrid" styleClass="form-grid" hgap="14.0" vgap="10.0">
+            <padding><Insets top="14.0" right="4.0" bottom="8.0" left="4.0"/></padding>
+            <columnConstraints>
+                <ColumnConstraints minWidth="190.0"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+            <children>
+                <Label text="Profil nasabah dan indikator awal" GridPane.rowIndex="0"/>
+                <Label fx:id="profile" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Label text="Batas penilaian" GridPane.rowIndex="1"/>
+                <Label fx:id="assessmentLimits" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="Hasil analisis" GridPane.rowIndex="2"/>
+                <Label fx:id="analysisSummary" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Keputusan pegawai" GridPane.rowIndex="3"/>
+                <ChoiceBox fx:id="decision" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label text="Jumlah disetujui (Rp)" GridPane.rowIndex="4"/>
+                <TextField fx:id="approvedAmount" promptText="Angka tanpa titik/koma"
+                           disable="true" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Label text="Alasan keputusan" GridPane.rowIndex="5"/>
+                <TextField fx:id="reason" promptText="Alasan keputusan" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+            </children>
+        </GridPane>
+    </content>
+</ScrollPane>

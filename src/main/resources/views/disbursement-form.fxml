@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+
+<ScrollPane fitToWidth="true" prefViewportHeight="240.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+        <GridPane fx:id="formGrid" styleClass="form-grid" hgap="14.0" vgap="10.0">
+            <padding><Insets top="14.0" right="4.0" bottom="8.0" left="4.0"/></padding>
+            <columnConstraints><ColumnConstraints minWidth="190.0"/><ColumnConstraints hgrow="ALWAYS"/></columnConstraints>
+            <children>
+                <Label text="Jumlah pencairan" GridPane.rowIndex="0"/>
+                <Label fx:id="amount" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Label text="Rekening tujuan" GridPane.rowIndex="1"/>
+                <Label fx:id="account" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="Tanggal pencairan" GridPane.rowIndex="2"/>
+                <DatePicker fx:id="date" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Referensi transaksi" GridPane.rowIndex="3"/>
+                <TextField fx:id="reference" promptText="Nomor referensi" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+            </children>
+        </GridPane>
+    </content>
+</ScrollPane>

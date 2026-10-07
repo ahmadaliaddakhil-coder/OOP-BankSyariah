@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+
+<ScrollPane fitToWidth="true" prefViewportHeight="580.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+        <GridPane fx:id="formGrid" styleClass="form-grid" hgap="14.0" vgap="10.0">
+            <padding><Insets top="14.0" right="4.0" bottom="8.0" left="4.0"/></padding>
+            <columnConstraints>
+                <ColumnConstraints minWidth="190.0"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+            <children>
+                <Label text="Nilai awal berasal dari pengajuan nasabah." styleClass="hint-text" GridPane.columnSpan="2"/>
+                <Label text="Omzet bulanan" GridPane.rowIndex="1"/>
+                <TextField fx:id="revenue" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="Biaya langsung" GridPane.rowIndex="2"/>
+                <TextField fx:id="directCost" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Biaya operasional" GridPane.rowIndex="3"/>
+                <TextField fx:id="operatingCost" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label text="Kewajiban usaha" GridPane.rowIndex="4"/>
+                <TextField fx:id="obligations" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Label text="Arus kas = omzet - biaya langsung - biaya operasional - kewajiban."
+                       wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="5"/>
+                <Label text="Arus kas tersedia" GridPane.rowIndex="6"/>
+                <Label fx:id="cashFlowPreview" wrapText="true"
+                       GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                <Label text="Catatan pemeriksaan" GridPane.rowIndex="7"/>
+                <TextArea fx:id="risk" promptText="Catat hasil verifikasi / risiko"
+                          wrapText="true" prefRowCount="3"
+                          GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                <Label text="Konfirmasi" GridPane.rowIndex="8"/>
+                <CheckBox fx:id="verified" text="Saya sudah memeriksa data keuangan di atas."
+                          wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="8"/>
+            </children>
+        </GridPane>
+    </content>
+</ScrollPane>

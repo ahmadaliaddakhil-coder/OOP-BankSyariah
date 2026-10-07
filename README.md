@@ -29,22 +29,36 @@ angka contoh keuangan yang diisikan otomatis. Antarmuka merupakan demo tanpa
 login sehingga kedua sisi melihat daftar pengajuan yang sama. Data disimpan di
 memori dan kembali kosong saat aplikasi ditutup.
 
-`Main` tetap menyediakan demo konsol. Jalankan tes model dan alur dengan:
+Struktur tampilan dan formulir proses menggunakan FXML di
+`src/main/resources/views`, sedangkan stylesheet ada di `src/main/resources/css`.
+File `.fxml` dapat dibuka dan diatur dengan JavaFX Scene Builder. `BankSyariahApp`
+menjalankan aplikasi, sedangkan logika tombol, validasi, dan komunikasi dengan
+model berada di `BankSyariahController`. Tampilan menggunakan layout kerja
+desktop dengan palet netral dan aksen hijau yang konsisten, didefinisikan di
+`css/app.css`.
+
+`Main` tetap menyediakan demo konsol. Kompilasi proyek dengan:
 
 ```powershell
 .\mvnw.cmd test
 ```
+
+Folder source tes `src/test` tidak disertakan di proyek saat ini, jadi perintah
+tersebut mengompilasi proyek tetapi tidak menjalankan tes otomatis.
 
 ## Struktur proyek
 
 - `src/main/java/enums`: status dan jenis akad.
 - `src/main/java/model`: model nasabah, usaha, pembiayaan, dan prosesnya.
 - `src/main/java/ui`: antarmuka JavaFX.
-- `src/test/java/model`: tes perhitungan, data pengajuan, dan alur pembiayaan.
+- `src/main/resources/views`: struktur tampilan FXML yang dapat dibuka dengan Scene Builder.
+- `src/main/resources/css`: stylesheet tampilan JavaFX.
 - `target/`: keluaran build dan laporan tes; dibuat Maven dan tidak perlu disimpan.
 
 ## Dokumentasi
 
+- [PANDUAN-MEMAHAMI-KODE.pdf](./PANDUAN-MEMAHAMI-KODE.pdf): panduan belajar
+  rinci untuk struktur proyek, FXML, CSS JavaFX, controller, dan alur model.
 - [README-SISTEM.md](./README-SISTEM.md): gambaran sistem, cakupan, aturan,
   alur proses, class, dan cara menjalankan.
 - [UML-DAN-FLOWCHART.md](./UML-DAN-FLOWCHART.md): class diagram dan flowchart

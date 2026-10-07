@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+
+<ScrollPane fitToWidth="true" prefViewportHeight="580.0"
+            xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <content>
+        <GridPane fx:id="formGrid" styleClass="form-grid" hgap="14.0" vgap="10.0">
+            <padding><Insets top="14.0" right="4.0" bottom="8.0" left="4.0"/></padding>
+            <columnConstraints>
+                <ColumnConstraints minWidth="190.0"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+            <children>
+                <Label text="Data nasabah" styleClass="form-section-title" GridPane.columnSpan="2"/>
+                <Label text="Nomor identitas" GridPane.rowIndex="1"/>
+                <TextField fx:id="customerId" promptText="ID nasabah" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="Nama nasabah" GridPane.rowIndex="2"/>
+                <TextField fx:id="customerName" promptText="Nama lengkap" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <Label text="Alamat" GridPane.rowIndex="3"/>
+                <TextField fx:id="address" promptText="Alamat nasabah" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <Label text="Tanggal lahir" GridPane.rowIndex="4"/>
+                <DatePicker fx:id="birthDate" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Label text="Pekerjaan" GridPane.rowIndex="5"/>
+                <TextField fx:id="occupation" promptText="Pekerjaan" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                <Label text="Gaji per bulan (Rp)" GridPane.rowIndex="6"/>
+                <TextField fx:id="monthlySalary" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+                <Label text="Masukkan gaji yang benar-benar diterima tiap bulan." styleClass="hint-text" wrapText="true"
+                       GridPane.columnIndex="1" GridPane.rowIndex="7"/>
+                <Label text="Data usaha dan rekening" styleClass="form-section-title" GridPane.columnSpan="2" GridPane.rowIndex="8"/>
+                <Label text="Nama usaha" GridPane.rowIndex="9"/>
+                <TextField fx:id="businessName" GridPane.columnIndex="1" GridPane.rowIndex="9"/>
+                <Label text="Sektor usaha" GridPane.rowIndex="10"/>
+                <TextField fx:id="sector" promptText="Contoh: Kuliner" GridPane.columnIndex="1" GridPane.rowIndex="10"/>
+                <Label text="Lokasi usaha" GridPane.rowIndex="11"/>
+                <TextField fx:id="businessAddress" GridPane.columnIndex="1" GridPane.rowIndex="11"/>
+                <Label text="Nomor rekening" GridPane.rowIndex="12"/>
+                <TextField fx:id="accountNumber" promptText="Nomor rekening tujuan" GridPane.columnIndex="1" GridPane.rowIndex="12"/>
+                <Label text="Saldo awal rekening (Rp)" GridPane.rowIndex="13"/>
+                <TextField fx:id="startingBalance" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="13"/>
+                <Label text="Keuangan usaha per bulan (Rp)" styleClass="form-section-title" GridPane.columnSpan="2" GridPane.rowIndex="14"/>
+                <Label text="Omzet bulanan" GridPane.rowIndex="15"/>
+                <TextField fx:id="revenue" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="15"/>
+                <Label text="Biaya langsung" GridPane.rowIndex="16"/>
+                <TextField fx:id="directCosts" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="16"/>
+                <Label text="Biaya operasional" GridPane.rowIndex="17"/>
+                <TextField fx:id="operatingCosts" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="17"/>
+                <Label text="Kewajiban usaha" GridPane.rowIndex="18"/>
+                <TextField fx:id="obligations" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="18"/>
+                <Label text="Data ini dilaporkan nasabah dan akan diperiksa oleh pegawai." styleClass="hint-text"
+                       wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="19"/>
+                <Label text="Rencana pembiayaan" styleClass="form-section-title" GridPane.columnSpan="2" GridPane.rowIndex="20"/>
+                <Label text="Nominal pembiayaan (Rp)" GridPane.rowIndex="21"/>
+                <TextField fx:id="amount" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="21"/>
+                <Label text="Tenor (bulan)" GridPane.rowIndex="22"/>
+                <TextField fx:id="tenor" promptText="Jumlah bulan" GridPane.columnIndex="1" GridPane.rowIndex="22"/>
+                <Label text="Tujuan penggunaan" GridPane.rowIndex="23"/>
+                <TextField fx:id="purpose" GridPane.columnIndex="1" GridPane.rowIndex="23"/>
+                <Label text="Jenis akad" GridPane.rowIndex="24"/>
+                <ChoiceBox fx:id="akad" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="24"/>
+                <Label text="Usulan nisbah bank (%)" GridPane.rowIndex="25"/>
+                <TextField fx:id="bankShare" promptText="Persentase" GridPane.columnIndex="1" GridPane.rowIndex="25"/>
+                <Label text="Usulan nisbah nasabah (%)" GridPane.rowIndex="26"/>
+                <TextField fx:id="customerShare" promptText="Persentase" GridPane.columnIndex="1" GridPane.rowIndex="26"/>
+                <Label text="Total usulan nisbah harus 100%." styleClass="hint-text" wrapText="true"
+                       GridPane.columnIndex="1" GridPane.rowIndex="27"/>
+                <Label text="Modal nasabah (Rp)" GridPane.rowIndex="28"/>
+                <TextField fx:id="customerCapital" promptText="Khusus akad Musyarakah"
+                           disable="true" GridPane.columnIndex="1" GridPane.rowIndex="28"/>
+                <Label text="Modal nasabah diisi hanya untuk akad Musyarakah." styleClass="hint-text"
+                       wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="29"/>
+            </children>
+        </GridPane>
+    </content>
+</ScrollPane>
