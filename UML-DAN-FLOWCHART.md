@@ -198,7 +198,7 @@ class AnalisisKelayakan {
   +getCatatanRisiko() String
 }
 
-class "AnalisisKelayakan.Rekomendasi" as Rekomendasi {
+class Rekomendasi {
   <<enumeration>>
   LAYAK_DIPERTIMBANGKAN
   PERLU_TINJAUAN
