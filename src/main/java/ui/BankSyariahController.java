@@ -52,44 +52,59 @@ import model.RiwayatPengajuan;
 import model.Usaha;
 
 public class BankSyariahController {
-    private static final DateTimeFormatter DATE_TIME =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private static final NumberFormat RUPIAH =
-            NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"));
+    private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private static final NumberFormat RUPIAH = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"));
 
-    private final BankSyariah bank =
-            new BankSyariah("B-001", "Bank Syariah Berkah");
-    private final PegawaiBank pegawai =
-            new PegawaiBank("PG-001", "Ahmad Fauzi", "Analis Pembiayaan", bank);
+    private final BankSyariah bank = new BankSyariah("B-001", "Bank Syariah Berkah");
+    private final PegawaiBank pegawai = new PegawaiBank("PG-001", "Ahmad Fauzi", "Analis Pembiayaan", bank);
     private final List<CaseRecord> records = new ArrayList<>();
     private final ObservableList<CaseRecord> tableRows = FXCollections.observableArrayList();
-    private final FilteredList<CaseRecord> employeeRows =
-            new FilteredList<>(tableRows, item -> true);
-    private final FilteredList<CaseRecord> customerRows =
-            new FilteredList<>(tableRows, item -> true);
+    private final FilteredList<CaseRecord> employeeRows = new FilteredList<>(tableRows, item -> true);
+    private final FilteredList<CaseRecord> customerRows = new FilteredList<>(tableRows, item -> true);
     private final SortedList<CaseRecord> sortedEmployeeRows = new SortedList<>(employeeRows);
     private final SortedList<CaseRecord> sortedCustomerRows = new SortedList<>(customerRows);
-    @FXML private VBox customerView;
-    @FXML private VBox employeeView;
-    @FXML private Button customerNavButton;
-    @FXML private Button employeeNavButton;
-    @FXML private TableView<CaseRecord> employeeTable;
-    @FXML private TableView<CaseRecord> customerTable;
-    @FXML private TableColumn<CaseRecord, String> employeeIdColumn;
-    @FXML private TableColumn<CaseRecord, String> employeeCustomerColumn;
-    @FXML private TableColumn<CaseRecord, String> employeeBusinessColumn;
-    @FXML private TableColumn<CaseRecord, String> employeeAmountColumn;
-    @FXML private TableColumn<CaseRecord, String> employeeStatusColumn;
-    @FXML private TableColumn<CaseRecord, String> customerIdColumn;
-    @FXML private TableColumn<CaseRecord, String> customerAkadColumn;
-    @FXML private TableColumn<CaseRecord, String> customerAmountColumn;
-    @FXML private TableColumn<CaseRecord, String> customerStatusColumn;
-    @FXML private TextField search;
-    @FXML private Label employeeIdentity;
-    @FXML private Label selectedTitle;
-    @FXML private TextArea selectedContent;
-    @FXML private VBox selectedActions;
-    @FXML private TextArea customerDetails;
+    @FXML
+    private VBox customerView;
+    @FXML
+    private VBox employeeView;
+    @FXML
+    private Button customerNavButton;
+    @FXML
+    private Button employeeNavButton;
+    @FXML
+    private TableView<CaseRecord> employeeTable;
+    @FXML
+    private TableView<CaseRecord> customerTable;
+    @FXML
+    private TableColumn<CaseRecord, String> employeeIdColumn;
+    @FXML
+    private TableColumn<CaseRecord, String> employeeCustomerColumn;
+    @FXML
+    private TableColumn<CaseRecord, String> employeeBusinessColumn;
+    @FXML
+    private TableColumn<CaseRecord, String> employeeAmountColumn;
+    @FXML
+    private TableColumn<CaseRecord, String> employeeStatusColumn;
+    @FXML
+    private TableColumn<CaseRecord, String> customerIdColumn;
+    @FXML
+    private TableColumn<CaseRecord, String> customerAkadColumn;
+    @FXML
+    private TableColumn<CaseRecord, String> customerAmountColumn;
+    @FXML
+    private TableColumn<CaseRecord, String> customerStatusColumn;
+    @FXML
+    private TextField search;
+    @FXML
+    private Label employeeIdentity;
+    @FXML
+    private Label selectedTitle;
+    @FXML
+    private TextArea selectedContent;
+    @FXML
+    private VBox selectedActions;
+    @FXML
+    private TextArea customerDetails;
 
     @FXML
     private void initialize() {
@@ -110,7 +125,7 @@ public class BankSyariahController {
     @FXML
     private void showEmployeeView() {
         employeeIdentity.setText(
-                "Pegawai demo: " + pegawai.getNama() + " — " + pegawai.getJabatan());
+                "Pegawai: " + pegawai.getNama() + "\n" + "Jabatan:" + pegawai.getJabatan());
         customerView.setVisible(false);
         customerView.setManaged(false);
         employeeView.setVisible(true);
@@ -142,8 +157,8 @@ public class BankSyariahController {
         employeeTable.setItems(sortedEmployeeRows);
         employeeTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, selected) -> showDetails(selected));
-        search.textProperty().addListener((observable, oldValue, newValue) ->
-                employeeRows.setPredicate(this::matchesSearch));
+        search.textProperty()
+                .addListener((observable, oldValue, newValue) -> employeeRows.setPredicate(this::matchesSearch));
 
         customerIdColumn.setCellValueFactory(cell -> new javafx.beans.property.SimpleStringProperty(
                 cell.getValue().pengajuan.getIdPengajuan()));
@@ -196,14 +211,14 @@ public class BankSyariahController {
         TextField customerCapital = form.number("customerCapital", "0");
         akad.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, value) -> {
-            boolean musyarakah = value == JenisAkad.MUSYARAKAH;
-            customerCapital.setDisable(!musyarakah);
-            if (musyarakah && oldValue != JenisAkad.MUSYARAKAH) {
-                customerCapital.clear();
-            } else if (!musyarakah) {
-                customerCapital.setText("0");
-            }
-        });
+                    boolean musyarakah = value == JenisAkad.MUSYARAKAH;
+                    customerCapital.setDisable(!musyarakah);
+                    if (musyarakah && oldValue != JenisAkad.MUSYARAKAH) {
+                        customerCapital.clear();
+                    } else if (!musyarakah) {
+                        customerCapital.setText("0");
+                    }
+                });
         customerCapital.setDisable(true);
 
         if (!form.show(() -> {
@@ -283,14 +298,14 @@ public class BankSyariahController {
                 Long.toString(record.pengajuan.getKewajibanUsahaBulananDilaporkan()));
         Label cashFlowPreview = form.control("cashFlowPreview", Label.class);
         updateCashFlowPreview(cashFlowPreview, revenue, directCost, operatingCost, obligations);
-        revenue.textProperty().addListener((observable, oldValue, newValue) ->
-                updateCashFlowPreview(cashFlowPreview, revenue, directCost, operatingCost, obligations));
-        directCost.textProperty().addListener((observable, oldValue, newValue) ->
-                updateCashFlowPreview(cashFlowPreview, revenue, directCost, operatingCost, obligations));
-        operatingCost.textProperty().addListener((observable, oldValue, newValue) ->
-                updateCashFlowPreview(cashFlowPreview, revenue, directCost, operatingCost, obligations));
-        obligations.textProperty().addListener((observable, oldValue, newValue) ->
-                updateCashFlowPreview(cashFlowPreview, revenue, directCost, operatingCost, obligations));
+        revenue.textProperty().addListener((observable, oldValue, newValue) -> updateCashFlowPreview(cashFlowPreview,
+                revenue, directCost, operatingCost, obligations));
+        directCost.textProperty().addListener((observable, oldValue, newValue) -> updateCashFlowPreview(cashFlowPreview,
+                revenue, directCost, operatingCost, obligations));
+        operatingCost.textProperty().addListener((observable, oldValue,
+                newValue) -> updateCashFlowPreview(cashFlowPreview, revenue, directCost, operatingCost, obligations));
+        obligations.textProperty().addListener((observable, oldValue,
+                newValue) -> updateCashFlowPreview(cashFlowPreview, revenue, directCost, operatingCost, obligations));
         TextArea risk = form.control("risk", TextArea.class);
         CheckBox verified = form.control("verified", CheckBox.class);
         if (!form.show(() -> {
@@ -337,11 +352,11 @@ public class BankSyariahController {
                         + "riwayat kredit, pengeluaran rumah tangga, atau jadwal pembayaran; "
                         + "kredibilitas dan kemampuan bayar belum dapat dipastikan.");
         String analysisText = "Arus kas tersedia hasil pemeriksaan: "
-                        + rupiah(record.pengajuan.getAnalisisKelayakan()
-                                .hitungArusKasTersediaBulanan())
-                        + ". Rekomendasi: "
-                        + label(record.pengajuan.getAnalisisKelayakan().getRekomendasiInternal())
-                        + " (bukan keputusan otomatis).";
+                + rupiah(record.pengajuan.getAnalisisKelayakan()
+                        .hitungArusKasTersediaBulanan())
+                + ". Rekomendasi: "
+                + label(record.pengajuan.getAnalisisKelayakan().getRekomendasiInternal())
+                + " (bukan keputusan otomatis).";
         form.control("analysisSummary", Label.class).setText(analysisText);
         ChoiceBox<StatusKeputusan> decision = form.choice(
                 "decision", StatusKeputusan.values(), null, BankSyariahController::label);
@@ -715,8 +730,7 @@ public class BankSyariahController {
             long available = AnalisisKelayakan.hitungArusKasTersediaBulanan(
                     parseAmount(revenue), parseAmount(directCosts),
                     parseAmount(operatingCosts), parseAmount(obligations));
-            AnalisisKelayakan.Rekomendasi recommendation =
-                    AnalisisKelayakan.rekomendasiUntukArusKas(available);
+            AnalisisKelayakan.Rekomendasi recommendation = AnalisisKelayakan.rekomendasiUntukArusKas(available);
             preview.setText(rupiah(available) + " · " + label(recommendation));
         } catch (IllegalArgumentException | ArithmeticException error) {
             preview.setText("Lengkapi semua angka untuk melihat perhitungan.");
@@ -848,8 +862,8 @@ public class BankSyariahController {
 
         private TextField number(String id, String initialValue) {
             TextField field = text(id);
-            field.setTextFormatter(new TextFormatter<String>(change ->
-                    change.getControlNewText().matches("\\d*") ? change : null));
+            field.setTextFormatter(
+                    new TextFormatter<String>(change -> change.getControlNewText().matches("\\d*") ? change : null));
             field.setText(initialValue);
             return field;
         }
@@ -908,8 +922,8 @@ public class BankSyariahController {
                     showError(error.getMessage());
                 }
             });
-            return dialog.showAndWait().filter(result ->
-                    result.getButtonData() == ButtonBar.ButtonData.OK_DONE).isPresent();
+            return dialog.showAndWait().filter(result -> result.getButtonData() == ButtonBar.ButtonData.OK_DONE)
+                    .isPresent();
         }
     }
 

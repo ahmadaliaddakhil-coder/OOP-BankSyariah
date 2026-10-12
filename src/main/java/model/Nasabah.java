@@ -23,15 +23,6 @@ public class Nasabah {
             String nama,
             String alamat,
             String tanggalLahir,
-            String pekerjaan) {
-        this(nomorId, nama, alamat, tanggalLahir, pekerjaan, 0L);
-    }
-
-    public Nasabah(
-            String nomorId,
-            String nama,
-            String alamat,
-            String tanggalLahir,
             String pekerjaan,
             long gajiBulanan) {
         if (gajiBulanan < 0) {

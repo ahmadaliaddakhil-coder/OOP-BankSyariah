@@ -21,7 +21,7 @@
                 <Insets top="24.0" right="16.0" bottom="18.0" left="16.0"/>
             </padding>
             <Label text="BERKAH" styleClass="brand-title"/>
-            <Label text="Pembiayaan modal" styleClass="brand-caption"/>
+            <Label text="kelompok 5" styleClass="brand-caption"/>
             <Region minHeight="30.0"/>
             <Label text="MENU" styleClass="sidebar-heading"/>
             <Button fx:id="customerNavButton" text="Nasabah"
@@ -31,9 +31,6 @@
                     styleClass="nav-button" maxWidth="Infinity"
                     onAction="#showEmployeeView"/>
             <Region VBox.vgrow="ALWAYS"/>
-            <Label text="Demo tanpa login" styleClass="sidebar-footer"/>
-            <Label text="Data hanya tersimpan selama aplikasi berjalan."
-                   styleClass="sidebar-note" wrapText="true"/>
         </VBox>
     </left>
     <center>
@@ -46,7 +43,6 @@
                         <Label text="Akad Mudharabah dan Musyarakah"
                                styleClass="muted-text"/>
                     </VBox>
-                    <Label text="DEMO" styleClass="environment-label"/>
                 </HBox>
             </top>
             <center>

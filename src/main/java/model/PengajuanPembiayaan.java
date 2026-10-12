@@ -49,23 +49,6 @@ public class PengajuanPembiayaan {
             JenisAkad jenisAkad,
             int nisbahBank,
             int nisbahNasabah,
-            long modalNasabah) {
-        this(idPengajuan, nasabah, usaha, nominal, tenorBulan, tujuanPenggunaan,
-                tanggalPengajuan, jenisAkad, nisbahBank, nisbahNasabah, modalNasabah,
-                0L, 0L, 0L, 0L);
-    }
-
-    public PengajuanPembiayaan(
-            String idPengajuan,
-            Nasabah nasabah,
-            Usaha usaha,
-            long nominal,
-            int tenorBulan,
-            String tujuanPenggunaan,
-            String tanggalPengajuan,
-            JenisAkad jenisAkad,
-            int nisbahBank,
-            int nisbahNasabah,
             long modalNasabah,
             long omzetBulananDilaporkan,
             long biayaLangsungBulananDilaporkan,
