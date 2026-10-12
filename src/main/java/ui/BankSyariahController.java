@@ -51,7 +51,13 @@ import model.RekeningNasabah;
 import model.RiwayatPengajuan;
 import model.Usaha;
 
+/**
+ * Menghubungkan tampilan JavaFX dengan proses nasabah dan pegawai bank.
+ */
 public class BankSyariahController {
+    public BankSyariahController() {
+    }
+
     private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private static final NumberFormat RUPIAH = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("id-ID"));
 

@@ -5,6 +5,8 @@ Musyarakah. Analisis menghitung laba operasional dan arus kas tersedia untuk
 memberi rekomendasi internal kepada pegawai. Pegawai menetapkan keputusan;
 factory terpisah memilih class akad; alur demo berhenti setelah pencairan
 penuh ke rekening nasabah. Riwayat status pengajuan dicatat dengan linked list.
+Proyek menyediakan antarmuka desktop JavaFX dan demo konsol. Data hanya
+disimpan di memori selama aplikasi berjalan; belum ada login atau database.
 
 ## Menjalankan GUI JavaFX
 
@@ -45,6 +47,30 @@ desktop dengan palet netral dan aksen hijau yang konsisten, didefinisikan di
 
 Folder source tes `src/test` tidak disertakan di proyek saat ini, jadi perintah
 tersebut mengompilasi proyek tetapi tidak menjalankan tes otomatis.
+
+## Alur dan diagram
+
+Nasabah mengisi profil, usaha, rekening, serta laporan keuangan bulanan saat
+mengajukan pembiayaan. Pegawai memeriksa laporan dan mencatat analisis sebelum
+menetapkan keputusan. Jika disetujui, pegawai membuat draft akad, kemudian
+menandatanganinya dan memproses pencairan penuh. Jika ditolak, proses berakhir
+tanpa akad. Rekomendasi arus kas hanya menjadi bahan pertimbangan pegawai; tidak
+menentukan keputusan secara otomatis.
+
+Diagram kelas, box UML, dan flowchart yang mengikuti implementasi tersedia di
+[UML-DAN-FLOWCHART.md](./UML-DAN-FLOWCHART.md). Gambaran aturan domain dan
+cakupan sistem ada di [README-SISTEM.md](./README-SISTEM.md).
+
+## Membuat Javadoc
+
+Komentar Javadoc menjelaskan model, status, dan operasi utama pada kode.
+Untuk menghasilkan dokumentasi HTML dari PowerShell, jalankan:
+
+```powershell
+.\mvnw.cmd javadoc:javadoc
+```
+
+Dokumentasi dapat dibuka di `target/site/apidocs/index.html`.
 
 ## Struktur proyek
 

@@ -5,7 +5,8 @@ import enums.StatusKeputusan;
 import enums.StatusPengajuan;
 
 /**
- * PengajuanPembiayaan
+ * Data pengajuan pembiayaan beserta status, analisis, keputusan, akad, dan
+ * riwayat perubahannya.
  */
 public class PengajuanPembiayaan {
 
@@ -38,6 +39,28 @@ public class PengajuanPembiayaan {
     private AkadPembiayaan akad;
     private PegawaiBank pegawaiPenganalisis;
 
+    /**
+     * Membuat pengajuan pembiayaan baru dengan data usaha dan keuangan yang
+     * dilaporkan nasabah.
+     *
+     * @param idPengajuan nomor identitas pengajuan
+     * @param nasabah nasabah yang mengajukan
+     * @param usaha usaha terdaftar milik nasabah
+     * @param nominal jumlah pembiayaan yang diminta dalam rupiah
+     * @param tenorBulan jangka waktu pembiayaan dalam bulan
+     * @param tujuanPenggunaan tujuan penggunaan pembiayaan
+     * @param tanggalPengajuan tanggal pengajuan
+     * @param jenisAkad jenis akad yang diajukan
+     * @param nisbahBank porsi nisbah bank dalam persen
+     * @param nisbahNasabah porsi nisbah nasabah dalam persen
+     * @param modalNasabah modal kontribusi nasabah dalam rupiah
+     * @param omzetBulananDilaporkan omzet bulanan usaha dalam rupiah
+     * @param biayaLangsungBulananDilaporkan biaya langsung bulanan dalam rupiah
+     * @param biayaOperasionalBulananDilaporkan biaya operasional bulanan dalam rupiah
+     * @param kewajibanUsahaBulananDilaporkan kewajiban usaha bulanan dalam rupiah
+     * @throws IllegalArgumentException jika relasi nasabah-usaha atau data pengajuan
+     *         tidak memenuhi aturan bisnis
+     */
     public PengajuanPembiayaan(
             String idPengajuan,
             Nasabah nasabah,
@@ -114,78 +137,176 @@ public class PengajuanPembiayaan {
         this.riwayatTerakhir = riwayatPertama;
     }
 
+    /**
+     * Mengembalikan nomor identitas pengajuan.
+     *
+     * @return nomor identitas pengajuan
+     */
     public String getIdPengajuan() {
         return idPengajuan;
     }
 
+    /**
+     * Mengembalikan nasabah yang mengajukan.
+     *
+     * @return nasabah yang mengajukan
+     */
     public Nasabah getNasabah() {
         return nasabah;
     }
 
+    /**
+     * Mengembalikan usaha yang menjadi dasar pengajuan.
+     *
+     * @return usaha yang menjadi dasar pengajuan
+     */
     public Usaha getUsaha() {
         return usaha;
     }
 
+    /**
+     * Mengembalikan nominal pembiayaan yang diminta dalam rupiah.
+     *
+     * @return nominal pembiayaan yang diminta dalam rupiah
+     */
     public long getNominal() {
         return nominal;
     }
 
+    /**
+     * Mengembalikan tenor pembiayaan dalam bulan.
+     *
+     * @return tenor pembiayaan dalam bulan
+     */
     public int getTenorBulan() {
         return tenorBulan;
     }
 
+    /**
+     * Mengembalikan tujuan penggunaan pembiayaan.
+     *
+     * @return tujuan penggunaan pembiayaan
+     */
     public String getTujuanPenggunaan() {
         return tujuanPenggunaan;
     }
 
+    /**
+     * Mengembalikan tanggal pengajuan.
+     *
+     * @return tanggal pengajuan
+     */
     public String getTanggalPengajuan() {
         return tanggalPengajuan;
     }
 
+    /**
+     * Mengembalikan jenis akad yang diajukan.
+     *
+     * @return jenis akad yang diajukan
+     */
     public JenisAkad getJenisAkad() {
         return jenisAkad;
     }
 
+    /**
+     * Mengembalikan porsi nisbah bank dalam persen.
+     *
+     * @return porsi nisbah bank dalam persen
+     */
     public int getNisbahBank() {
         return nisbahBank;
     }
 
+    /**
+     * Mengembalikan porsi nisbah nasabah dalam persen.
+     *
+     * @return porsi nisbah nasabah dalam persen
+     */
     public int getNisbahNasabah() {
         return nisbahNasabah;
     }
 
+    /**
+     * Mengembalikan modal kontribusi nasabah dalam rupiah.
+     *
+     * @return modal kontribusi nasabah dalam rupiah
+     */
     public long getModalNasabah() {
         return modalNasabah;
     }
 
+    /**
+     * Mengembalikan omzet bulanan yang dilaporkan dalam rupiah.
+     *
+     * @return omzet bulanan yang dilaporkan dalam rupiah
+     */
     public long getOmzetBulananDilaporkan() {
         return omzetBulananDilaporkan;
     }
 
+    /**
+     * Mengembalikan biaya langsung bulanan yang dilaporkan dalam rupiah.
+     *
+     * @return biaya langsung bulanan yang dilaporkan dalam rupiah
+     */
     public long getBiayaLangsungBulananDilaporkan() {
         return biayaLangsungBulananDilaporkan;
     }
 
+    /**
+     * Mengembalikan biaya operasional bulanan yang dilaporkan dalam rupiah.
+     *
+     * @return biaya operasional bulanan yang dilaporkan dalam rupiah
+     */
     public long getBiayaOperasionalBulananDilaporkan() {
         return biayaOperasionalBulananDilaporkan;
     }
 
+    /**
+     * Mengembalikan kewajiban usaha bulanan yang dilaporkan dalam rupiah.
+     *
+     * @return kewajiban usaha bulanan yang dilaporkan dalam rupiah
+     */
     public long getKewajibanUsahaBulananDilaporkan() {
         return kewajibanUsahaBulananDilaporkan;
     }
 
+    /**
+     * Mengembalikan status pengajuan saat ini.
+     *
+     * @return status pengajuan saat ini
+     */
     public StatusPengajuan getStatus() {
         return status;
     }
 
+    /**
+     * Mengembalikan catatan pertama dalam riwayat perubahan status.
+     *
+     * @return catatan pertama dalam riwayat perubahan status
+     */
     public RiwayatPengajuan getRiwayatPertama() {
         return riwayatPertama;
     }
 
+    /**
+     * Mengembalikan analisis kelayakan yang tercatat, atau {@code null} jika belum ada.
+     *
+     * @return analisis kelayakan yang tercatat, atau {@code null} jika belum ada
+     */
     public AnalisisKelayakan getAnalisisKelayakan() {
         return analisisKelayakan;
     }
 
+    /**
+     * Memulai analisis dan mengubah status pengajuan menjadi {@code DIPROSES}.
+     *
+     * @param pegawai pegawai terdaftar yang menangani analisis
+     * @param waktu waktu dimulainya analisis
+     * @throws IllegalArgumentException jika pegawai tidak valid
+     * @throws IllegalStateException jika transisi status tidak diizinkan
+     */
     public void mulaiAnalisis(PegawaiBank pegawai, String waktu) {
         if (pegawai == null) {
             throw new IllegalArgumentException("Pegawai tidak boleh null");
@@ -203,6 +324,15 @@ public class PengajuanPembiayaan {
         pegawaiPenganalisis = pegawai;
     }
 
+    /**
+     * Mencatat hasil analisis untuk pengajuan ini.
+     *
+     * @param analisis hasil analisis yang terkait dengan pengajuan dan pegawainya
+     * @throws IllegalArgumentException jika analisis tidak sesuai dengan pengajuan
+     *         atau pegawai penanggung jawab
+     * @throws IllegalStateException jika pengajuan belum diproses atau sudah
+     *         memiliki analisis
+     */
     public void catatAnalisis(AnalisisKelayakan analisis) {
         if (analisis == null) {
             throw new IllegalArgumentException("Analisis tidak boleh null");
@@ -235,10 +365,23 @@ public class PengajuanPembiayaan {
         this.analisisKelayakan = analisis;
     }
 
+    /**
+     * Mengembalikan akad yang dibuat untuk pengajuan ini, atau {@code null} jika belum ada.
+     *
+     * @return akad yang dibuat untuk pengajuan ini, atau {@code null} jika belum ada
+     */
     public AkadPembiayaan getAkad() {
         return akad;
     }
 
+    /**
+     * Mencatat keputusan dan mengubah status pengajuan sesuai hasil keputusan.
+     *
+     * @param keputusan keputusan untuk pengajuan ini
+     * @throws IllegalArgumentException jika keputusan atau pegawai pemutus tidak valid
+     * @throws IllegalStateException jika keputusan bukan untuk pengajuan ini atau
+     *         analisis belum dicatat
+     */
     public void catatKeputusan(KeputusanPembiayaan keputusan) {
         if (keputusan == null) {
             throw new IllegalArgumentException("Keputusan tidak boleh null");
@@ -269,6 +412,17 @@ public class PengajuanPembiayaan {
                 keputusan.getAlasan());
     }
 
+    /**
+     * Membuat akad yang sesuai dengan jenis akad setelah pengajuan disetujui.
+     *
+     * @param nomorAkad nomor identitas akad
+     * @param keputusan keputusan persetujuan pengajuan
+     * @param tanggalJatuhTempo tanggal jatuh tempo akad
+     * @return akad yang dibuat
+     * @throws IllegalStateException jika akad sudah dibuat atau pengajuan belum
+     *         disetujui
+     * @throws IllegalArgumentException jika data akad atau keputusan tidak valid
+     */
     public AkadPembiayaan buatAkad(
             String nomorAkad,
             KeputusanPembiayaan keputusan,
@@ -337,6 +491,11 @@ public class PengajuanPembiayaan {
         this.status = statusBaru;
     }
 
+    /**
+     * Menghasilkan ringkasan data pengajuan dan statusnya.
+     *
+     * @return ringkasan data pengajuan dan statusnya
+     */
     @Override
     public String toString() {
         return "PengajuanPembiayaan: "

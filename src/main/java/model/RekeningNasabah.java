@@ -1,10 +1,21 @@
 package model;
 
+/**
+ * Mewakili rekening milik nasabah dan saldonya dalam rupiah.
+ */
 public class RekeningNasabah {
     private final String nomorRekening;
     private final Nasabah pemilik;
     private long saldo;
 
+    /**
+     * Membuat rekening dengan saldo awal.
+     *
+     * @param nomorRekening nomor rekening
+     * @param pemilik nasabah pemilik rekening
+     * @param saldoAwal saldo awal dalam rupiah
+     * @throws IllegalArgumentException jika nomor kosong, pemilik null, atau saldo negatif
+     */
     public RekeningNasabah(
             String nomorRekening,
             Nasabah pemilik,
@@ -24,14 +35,29 @@ public class RekeningNasabah {
         this.saldo = saldoAwal;
     }
 
+    /**
+     * Mengembalikan nomor rekening.
+     *
+     * @return nomor rekening
+     */
     public String getNomorRekening() {
         return nomorRekening;
     }
 
+    /**
+     * Mengembalikan nasabah pemilik rekening.
+     *
+     * @return nasabah pemilik rekening
+     */
     public Nasabah getPemilik() {
         return pemilik;
     }
 
+    /**
+     * Mengembalikan saldo rekening dalam rupiah.
+     *
+     * @return saldo rekening dalam rupiah
+     */
     public long getSaldo() {
         return saldo;
     }
@@ -44,6 +70,11 @@ public class RekeningNasabah {
         saldo = Math.addExact(saldo, jumlah);
     }
 
+    /**
+     * Menghasilkan ringkasan informasi rekening dan saldonya.
+     *
+     * @return ringkasan informasi rekening dan saldonya
+     */
     @Override
     public String toString() {
         return "Rekening Nasabah"

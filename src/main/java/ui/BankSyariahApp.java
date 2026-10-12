@@ -8,7 +8,20 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/**
+ * Titik masuk aplikasi desktop JavaFX untuk sistem pembiayaan modal syariah.
+ */
 public class BankSyariahApp extends Application {
+    /** Creates the JavaFX application entry point. */
+    public BankSyariahApp() {
+    }
+
+    /**
+     * Memuat tampilan utama dan menampilkan jendela aplikasi.
+     *
+     * @param stage jendela utama yang disediakan JavaFX
+     * @throws IllegalStateException jika berkas tampilan utama tidak dapat dimuat
+     */
     @Override
     public void start(Stage stage) {
         FXMLLoader loader = new FXMLLoader(
@@ -30,6 +43,11 @@ public class BankSyariahApp extends Application {
         stage.show();
     }
 
+    /**
+     * Menjalankan aplikasi JavaFX.
+     *
+     * @param args argumen baris perintah yang diteruskan ke JavaFX
+     */
     public static void main(String[] args) {
         launch(args);
     }

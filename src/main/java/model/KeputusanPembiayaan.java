@@ -3,7 +3,7 @@ package model;
 import enums.StatusKeputusan;
 
 /**
- * KeputusanPembiayaan
+ * Menyimpan hasil keputusan pegawai terhadap suatu pengajuan pembiayaan.
  */
 public class KeputusanPembiayaan {
 
@@ -15,6 +15,18 @@ public class KeputusanPembiayaan {
     private final long jumlahDisetujui;
     private final String alasan;
 
+    /**
+     * Membuat keputusan pembiayaan.
+     *
+     * @param idKeputusan nomor identitas keputusan
+     * @param tanggalKeputusan tanggal keputusan
+     * @param pengajuan pengajuan yang diputuskan
+     * @param pegawaiPemutus pegawai terdaftar yang membuat keputusan
+     * @param statusKeputusan hasil persetujuan atau penolakan
+     * @param jumlahDisetujui jumlah yang disetujui dalam rupiah; harus nol jika ditolak
+     * @param alasan alasan keputusan
+     * @throws IllegalArgumentException jika keputusan, pegawai, atau jumlah tidak valid
+     */
     public KeputusanPembiayaan(String idKeputusan, String tanggalKeputusan, PengajuanPembiayaan pengajuan,
             PegawaiBank pegawaiPemutus, StatusKeputusan statusKeputusan, long jumlahDisetujui, String alasan) {
 
@@ -52,34 +64,74 @@ public class KeputusanPembiayaan {
         this.alasan = alasan;
     }
 
+    /**
+     * Mengembalikan nomor identitas keputusan.
+     *
+     * @return nomor identitas keputusan
+     */
     public String getIdKeputusan() {
         return idKeputusan;
     }
 
+    /**
+     * Mengembalikan tanggal keputusan.
+     *
+     * @return tanggal keputusan
+     */
     public String getTanggalKeputusan() {
         return tanggalKeputusan;
     }
 
+    /**
+     * Mengembalikan pengajuan yang diputuskan.
+     *
+     * @return pengajuan yang diputuskan
+     */
     public PengajuanPembiayaan getPengajuan() {
         return pengajuan;
     }
 
+    /**
+     * Mengembalikan pegawai yang membuat keputusan.
+     *
+     * @return pegawai yang membuat keputusan
+     */
     public PegawaiBank getPegawaiPemutus() {
         return pegawaiPemutus;
     }
 
+    /**
+     * Mengembalikan status persetujuan keputusan.
+     *
+     * @return status persetujuan keputusan
+     */
     public StatusKeputusan getStatusKeputusan() {
         return statusKeputusan;
     }
 
+    /**
+     * Mengembalikan jumlah yang disetujui dalam rupiah.
+     *
+     * @return jumlah yang disetujui dalam rupiah
+     */
     public long getJumlahDisetujui() {
         return jumlahDisetujui;
     }
 
+    /**
+     * Mengembalikan alasan keputusan.
+     *
+     * @return alasan keputusan
+     */
     public String getAlasan() {
         return alasan;
     }
 
+    /**
+     * Menghasilkan ringkasan keputusan pembiayaan.
+     *
+     * @return ringkasan keputusan pembiayaan
+     */
     @Override
     public String toString() {
         return "Keputusan Pembiayaan: "

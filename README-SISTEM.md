@@ -66,7 +66,7 @@ usaha sebelum keputusan, factory akad, dan batas proses sampai pencairan.
 | **35** | Ganti tautan eksternal saja dengan flowchart tertanam: pengajuan → analisis → rekomendasi internal → keputusan pegawai → ditolak/akad → tanda tangan → pencairan penuh → saldo bertambah → selesai. |
 | **36** | Perbarui ringkasan OOP: pertahankan encapsulation, inheritance, polymorphism, dan abstraction pada class akad; tambahkan dependency factory. Hindari klaim komposisi/aggregation yang tidak sesuai dengan relasi yang benar-benar dimodelkan. |
 | **37** | Pertahankan slide demo/video. Pastikan demo yang ditautkan menunjukkan scope terbaru dan tidak menampilkan service, bagi hasil, pembayaran, atau penyelesaian akad. |
-| **38** | Perbarui batasan: data in-memory, tanggal masih `String`, belum ada UI/auth/database/test suite; tidak ada proses pascapencairan. Ganti “belum ada audit log” dengan keterangan bahwa linked list hanya menyimpan perubahan status. Hapus future work “tambah service layer”; itu tidak diperlukan dalam desain sederhana sekarang. |
+| **38** | Perbarui batasan: GUI JavaFX belum memiliki login dan data masih in-memory; tanggal pada model masih `String`, database dan test suite otomatis belum tersedia, serta tidak ada proses pascapencairan. Ganti “belum ada audit log” dengan keterangan bahwa linked list hanya menyimpan perubahan status. Hapus future work “tambah service layer”; itu tidak diperlukan dalam desain sederhana sekarang. |
 | **39** | Pertahankan tautan source code jika masih benar dan dapat diakses. |
 | **40** | Ubah kesimpulan “dari pengajuan hingga penyelesaian akad” menjadi “dari pengajuan hingga pencairan dana”; sebut analisis internal, keputusan pegawai, factory akad, dan riwayat status. |
 | **41** | Pertahankan halaman penutup dan data anggota kelompok. |
@@ -125,8 +125,9 @@ laporan, bagi hasil, pembagian kerugian, evaluasi kelalaian/pelanggaran,
 pembayaran cicilan, penghentian dini, atau pelunasan akad. Fitur-fitur tersebut
 dihapus agar cakupan program tetap fokus.
 
-Sistem juga belum memakai database, UI, login, jaringan, integrasi bank,
-ledger/pembukuan, atau test suite otomatis.
+Sistem sudah memiliki GUI JavaFX dan demo konsol, tetapi belum memakai
+database, login, jaringan, integrasi bank, ledger/pembukuan, atau test suite
+otomatis. Data GUI hanya disimpan di memori selama aplikasi berjalan.
 
 ## Jenis akad
 
@@ -319,8 +320,8 @@ Demo konsol lama tetap dapat dijalankan setelah proyek dikompilasi:
 java -cp target/classes Main
 ```
 
-`Main` menjalankan skenario Mudharabah. Tepat di dekat pembuatan pengajuan
-tersedia contoh Musyarakah yang dikomentari. Sistem menampilkan rekomendasi
+`Main` menjalankan skenario Musyarakah. Tepat di dekat pembuatan pengajuan
+tersedia contoh Mudharabah yang dikomentari. Sistem menampilkan rekomendasi
 analisis sebagai bahan pertimbangan; pegawai tetap menetapkan keputusan.
 
 ## Contoh hasil saldo

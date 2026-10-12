@@ -4,10 +4,25 @@ import enums.JenisAkad;
 import enums.StatusKeputusan;
 import enums.StatusPengajuan;
 
+/**
+ * Factory untuk membuat jenis akad yang sesuai dengan pengajuan yang disetujui.
+ */
 public final class PembuatAkad {
     private PembuatAkad() {
     }
 
+    /**
+     * Membuat akad berdasarkan jenis akad pada pengajuan.
+     *
+     * @param nomorAkad nomor identitas akad
+     * @param pengajuan pengajuan yang disetujui
+     * @param keputusan keputusan persetujuan untuk pengajuan tersebut
+     * @param tanggalJatuhTempo tanggal jatuh tempo akad
+     * @return akad mudharabah atau musyarakah sesuai jenis pengajuan
+     * @throws IllegalArgumentException jika pengajuan null atau jenis akad tidak
+     *         didukung
+     * @throws IllegalStateException jika keputusan atau pengajuan belum disetujui
+     */
     public static AkadPembiayaan buatAkad(
             String nomorAkad,
             PengajuanPembiayaan pengajuan,

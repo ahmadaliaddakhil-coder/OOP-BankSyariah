@@ -3,7 +3,9 @@
 Diagram ini menggambarkan cakupan source saat ini: pengajuan pembiayaan
 Mudharabah/Musyarakah, riwayat status pengajuan, persetujuan, akad, dan satu
 kali pencairan penuh ke rekening nasabah. Proses berakhir setelah saldo
-rekening bertambah.
+rekening bertambah. Aplikasi memiliki GUI JavaFX dan demo konsol; data GUI
+berada di memori selama aplikasi berjalan. Rekomendasi analisis tidak mengambil
+keputusan secara otomatis.
 
 ## Class diagram
 
@@ -13,6 +15,26 @@ direction LR
 
 class Main {
   +main(String[] args) void
+}
+
+class BankSyariahApp {
+  +start(Stage) void
+  +main(String[] args) void
+}
+
+class BankSyariahController {
+  -BankSyariah bank
+  -PegawaiBank pegawai
+  -List~CaseRecord~ records
+}
+
+class CaseRecord {
+  <<private nested class>>
+  -Nasabah nasabah
+  -Usaha usaha
+  -RekeningNasabah rekening
+  -PengajuanPembiayaan pengajuan
+  -KeputusanPembiayaan keputusan
 }
 
 class BankSyariah {
@@ -47,6 +69,7 @@ class Nasabah {
   -List~Usaha~ daftarUsaha
   -List~PengajuanPembiayaan~ daftarPengajuan
   -List~RekeningNasabah~ daftarRekening
+  +Nasabah(String, String, String, String, String, long)
   +tambahUsaha(Usaha) void
   +tambahRekening(RekeningNasabah) void
   +ajukanPembiayaan(PengajuanPembiayaan) void
@@ -106,6 +129,8 @@ class PengajuanPembiayaan {
   -AnalisisKelayakan analisisKelayakan
   -AkadPembiayaan akad
   -PegawaiBank pegawaiPenganalisis
+  +PengajuanPembiayaan(String, Nasabah, Usaha, long, int, String, String, JenisAkad, int, int, long, long, long, long, long)
+  +getIdPengajuan() String
   +getStatus() StatusPengajuan
   +getNasabah() Nasabah
   +getUsaha() Usaha
@@ -167,11 +192,13 @@ class AnalisisKelayakan {
   +getKewajibanUsahaBulanan() long
   +hitungLabaOperasionalBulanan() long
   +hitungArusKasTersediaBulanan() long
+  +hitungArusKasTersediaBulanan(long, long, long, long)$ long
   +getRekomendasiInternal() Rekomendasi
+  +rekomendasiUntukArusKas(long)$ Rekomendasi
   +getCatatanRisiko() String
 }
 
-class Rekomendasi {
+class "AnalisisKelayakan.Rekomendasi" as Rekomendasi {
   <<enumeration>>
   LAYAK_DIPERTIMBANGKAN
   PERLU_TINJAUAN
@@ -287,7 +314,7 @@ PengajuanPembiayaan "1" *-- "1..*" RiwayatPengajuan : riwayat status
 RiwayatPengajuan "1" --> "0..1" RiwayatPengajuan : node berikutnya
 PengajuanPembiayaan "1" <-- "0..1" AnalisisKelayakan : dianalisis
 AnalisisKelayakan "0..*" --> "1" PegawaiBank : analis
-KeputusanPembiayaan "0..*" --> "1" PengajuanPembiayaan : memutus
+KeputusanPembiayaan "0..1" --> "1" PengajuanPembiayaan : memutus
 KeputusanPembiayaan "0..*" --> "1" PegawaiBank : pemutus
 PengajuanPembiayaan "1" --> "0..1" AkadPembiayaan : memiliki akad
 AkadPembiayaan <|-- AkadMudharabah
@@ -297,6 +324,14 @@ AkadPembiayaan "0..*" --> "1" BankSyariah : diterbitkan bank
 AkadPembiayaan "0..*" --> "1" KeputusanPembiayaan : berdasarkan keputusan
 AkadPembiayaan "1" *-- "0..1" Pencairan : satu kali pencairan
 Pencairan "0..*" --> "1" RekeningNasabah : rekening tujuan
+
+BankSyariahApp ..> BankSyariahController : memuat controller FXML
+BankSyariahController "1" *-- "0..*" CaseRecord : kasus selama aplikasi berjalan
+CaseRecord "1" --> "1" Nasabah
+CaseRecord "1" --> "1" Usaha
+CaseRecord "1" --> "1" RekeningNasabah
+CaseRecord "1" --> "1" PengajuanPembiayaan
+CaseRecord "1" --> "0..1" KeputusanPembiayaan
 
 PengajuanPembiayaan ..> PembuatAkad : meminta pembuatan setelah disetujui
 PembuatAkad ..> AkadMudharabah : memilih untuk Mudharabah
@@ -319,6 +354,10 @@ Notasi: `*--` adalah komposisi, `o--` adalah agregasi, panah segitiga kosong
 menunjukkan pewarisan, dan garis putus-putus menunjukkan ketergantungan.
 Tanda `~` menunjukkan akses package-private. `getJenisAkad()` dideklarasikan
 abstrak pada `AkadPembiayaan` dan diimplementasikan oleh kedua turunannya.
+`KeputusanPembiayaan` direferensikan oleh `CaseRecord` pada controller GUI;
+`PengajuanPembiayaan` menggunakannya untuk mencatat transisi status, tetapi
+tidak menyimpan field keputusan. Rekening, data pegawai, dan catatan kasus pada
+GUI tidak dipersistenkan setelah aplikasi ditutup.
 
 ## UML box factory untuk slide presentasi
 
@@ -366,72 +405,85 @@ percabangan baru.
 
 ## Flowchart
 
-Ringkasan berikut cocok untuk slide alur sistem; flowchart lengkap di bawahnya
-menampilkan validasi dan perubahan status secara lebih rinci.
+Ringkasan ini menunjukkan alur GUI. Kesalahan validasi mengembalikan pengguna
+ke formulir yang sedang dibuka; validasi yang gagal tidak mengubah status kasus.
 
 ```mermaid
 flowchart TD
     A([Mulai]) --> B[Siapkan bank dan pegawai terdaftar]
-    B --> C[Nasabah isi data dan laporan keuangan bulanan]
-    C --> D[Validasi dan simpan pengajuan]
-    D --> E[Pegawai memeriksa laporan nasabah]
-    E --> F[Catat analisis dan hasil perhitungan]
-    F --> G[Tampilkan rekomendasi sebagai bahan pertimbangan]
-    G --> H[Pegawai menetapkan keputusan pada langkah terpisah]
-    H --> I{Disetujui?}
-    I -- Tidak --> J[Catat status DITOLAK dan riwayat]
-    J --> K([Selesai tanpa akad])
-    I -- Ya --> L[Catat status DISETUJUI dan riwayat]
-    L --> M[pengajuan.buatAkad meminta PembuatAkad]
-    M --> N{Jenis akad}
-    N -- Mudharabah --> O[Buat AkadMudharabah berstatus DRAFT]
-    N -- Musyarakah --> P[Buat AkadMusyarakah berstatus DRAFT]
-    O --> Q[Pegawai menandatangani pada langkah terpisah]
-    P --> Q
-    Q --> R[Akad MENUNGGU_PENCAIRAN]
-    R --> S[Pegawai memproses pencairan]
-    S --> T[Kredit rekening nasabah satu kali]
-    T --> U[Tampilkan pencairan, saldo, dan riwayat]
-    U --> V([Selesai])
+    B --> C[Nasabah mengisi profil, usaha, rekening, dan pengajuan]
+    C --> D{Data pengajuan valid?}
+    D -- Tidak --> C
+    D -- Ya --> E[Simpan pengajuan berstatus DIAJUKAN dan riwayat awal]
+    E --> F[Pegawai meninjau dan mengonfirmasi laporan keuangan]
+    F --> G[Catat DIPROSES, analisis, dan riwayat status]
+    G --> H[Tampilkan laba, arus kas, dan rekomendasi internal]
+    H --> I[Pegawai memilih keputusan dan jumlah persetujuan]
+    I --> J{Keputusan}
+    J -- Ditolak --> K[Catat DITOLAK dan alasan]
+    K --> L([Selesai tanpa akad])
+    J -- Disetujui --> M[Catat DISETUJUI dan jumlah]
+    M --> N[Pengajuan meminta PembuatAkad membuat draft]
+    N --> O{Jenis akad}
+    O -- Mudharabah --> P[AkadMudharabah berstatus DRAFT]
+    O -- Musyarakah --> Q[AkadMusyarakah berstatus DRAFT]
+    P --> R[Pegawai menandatangani akad]
+    Q --> R
+    R --> S[Akad berstatus MENUNGGU_PENCAIRAN]
+    S --> T[Pegawai mengisi tanggal dan referensi pencairan]
+    T --> U{Pencairan valid dan rekening milik nasabah?}
+    U -- Tidak --> T
+    U -- Ya --> V[Kredit rekening sebesar jumlah disetujui]
+    V --> W[Catat pencairan dan ubah status akad ke DICAIRKAN]
+    W --> X([Selesai])
 ```
+
+Flow detail berikut dimulai setelah pengajuan berhasil dibuat dan dipilih pada
+halaman pegawai.
 
 ```mermaid
 flowchart TD
-    A([Mulai]) --> B[Siapkan bank dan pegawai]
-    B --> C[Buat nasabah, usaha, dan rekening]
-    C --> D[Nasabah mengisi data usaha, keuangan bulanan, dan pengajuan]
-    D --> E{Data pengajuan valid?}
-    E -- Tidak --> X([Validasi gagal dan proses dihentikan])
-    E -- Ya --> F[Status DIAJUKAN dan catat riwayat awal]
-    F --> G[pengajuan.mulaiAnalisis pegawai bank terdaftar dan waktu]
-    G --> H[Status DIPROSES dan tambahkan riwayat]
-    H --> I[Pegawai memeriksa data keuangan yang dilaporkan nasabah]
-    I --> I1[Gunakan data terverifikasi untuk mencatat analisis]
-    I1 --> I2[Hitung laba operasional dan arus kas tersedia]
-    I2 --> I3[Tampilkan rekomendasi internal kepada pegawai]
-    I3 --> J[Pegawai meninjau hasil dan menetapkan keputusan]
-    J --> J1[pengajuan.catatKeputusan]
-    J1 --> K{Disetujui?}
-    K -- Tidak --> L[Status DITOLAK dan catat riwayat]
-    L --> Z1([Selesai tanpa akad dan pencairan])
-    K -- Ya --> M[Status DISETUJUI dan catat riwayat]
-    M --> N[pengajuan.buatAkad meminta PembuatAkad]
-    N --> N1{Jenis akad pada pengajuan?}
-    N1 -- Mudharabah --> O[PembuatAkad membuat AkadMudharabah]
-    N1 -- Musyarakah --> P[PembuatAkad membuat AkadMusyarakah dengan modal nasabah]
-    O --> Q[Pengajuan menyimpan referensi akad]
-    P --> Q
-    Q --> R[Tandatangani akad]
-    R --> S[Status MENUNGGU_PENCAIRAN]
-    S --> T[akad.cairkan satu kali sebesar jumlah disetujui]
-    T --> U{Data pencairan valid dan rekening terdaftar milik nasabah?}
-    U -- Tidak --> V[Validasi gagal dan proses dihentikan]
-    V --> X
-    U -- Ya --> W[Kredit saldo rekening sebesar jumlah disetujui]
-    W --> Y[Catat tanggal dan referensi pencairan]
-    Y --> AA[Status akad DICAIRKAN]
-    AA --> AB[Tampilkan akad, pencairan, saldo baru, dan riwayat]
-    AB --> Z([Selesai setelah pencairan])
+    A([Pegawai memilih Periksa data keuangan]) --> B[Form dibuka dengan laporan yang dimasukkan nasabah]
+    B --> C[Pegawai mengoreksi nilai bila perlu, mengisi risiko, dan mengonfirmasi pemeriksaan]
+    C --> D{Data dan konfirmasi valid?}
+    D -- Tidak --> B
+    D -- Ya --> F[pengajuan.mulaiAnalisis]
+    F --> G[Status DIPROSES dan riwayat bertambah]
+    G --> H[Buat AnalisisKelayakan dan hitung arus kas]
+    H --> I[pengajuan.catatAnalisis]
+    I --> J[Tampilkan rekomendasi internal kepada pegawai]
+    J --> K[Pegawai membuka form keputusan]
+    K --> L[Pilih status, jumlah disetujui bila setuju, dan alasan]
+    L --> M{Data keputusan valid?}
+    M -- Tidak --> K
+    M -- Ya --> N[pengajuan.catatKeputusan dan simpan pada CaseRecord]
+    N --> O{Keputusan pegawai}
+    O -- Ditolak --> P[Status DITOLAK dan riwayat bertambah]
+    P --> Q([Selesai tanpa akad])
+    O -- Disetujui --> R[Status DISETUJUI dan riwayat bertambah]
+    R --> S[Hitung jatuh tempo dari tanggal pengajuan dan tenor]
+    S --> T{Jatuh tempo masih berlaku?}
+    T -- Tidak --> T0([Kembali ke detail; akad belum dibuat])
+    T -- Ya --> U[pengajuan.buatAkad memanggil PembuatAkad]
+    U --> V{Jenis akad}
+    V -- Mudharabah --> W[Buat AkadMudharabah berstatus DRAFT]
+    V -- Musyarakah --> X[Buat AkadMusyarakah dengan modal nasabah]
+    W --> Y[Pegawai memasukkan tanggal tanda tangan]
+    X --> Y
+    Y --> Z{Tanggal tanda tangan valid?}
+    Z -- Tidak --> Y
+    Z -- Ya --> AA[akad.tandatangani dan status MENUNGGU_PENCAIRAN]
+    AA --> AB[Pegawai memasukkan tanggal dan referensi pencairan]
+    AB --> AC{Tanggal tidak sebelum tanda tangan dan referensi terisi?}
+    AC -- Tidak --> AB
+    AC -- Ya --> AD[akad.cairkan memvalidasi akad dan rekening, lalu membuat Pencairan]
+    AD --> AE{Validasi akad dan rekening lolos?}
+    AE -- Tidak --> AE1[Pesan validasi; status dan saldo tidak berubah]
+    AE1 --> AB
+    AE -- Ya --> AF[Kredit saldo sebesar jumlah yang disetujui]
+    AF --> AG[Simpan pencairan dan ubah status akad ke DICAIRKAN]
+    AG --> AH[Tampilkan akad, pencairan, saldo, dan riwayat]
+    AH --> AI([Selesai])
 ```
 
 Nasabah mengisi omzet, biaya langsung, biaya operasional, dan kewajiban usaha
@@ -453,7 +505,18 @@ bank dan direlasikan langsung pada diagram.
 GUI memisahkan aksi pemeriksaan, penetapan keputusan, pembuatan draft akad,
 penandatanganan, dan pencairan. Dengan demikian status `DIPROSES`, akad
 `DRAFT`, dan akad `MENUNGGU_PENCAIRAN` tetap terlihat sebagai tahap tersendiri
-sebelum pengguna melanjutkan.
+sebelum pengguna melanjutkan. Membatalkan formulir kembali ke detail kasus
+tanpa menjalankan operasi yang belum dikonfirmasi. Validasi gagal menampilkan
+pesan dan mempertahankan formulir agar dapat diperbaiki. Tanggal jatuh tempo
+diturunkan dari tanggal pengajuan ditambah tenor; jika tanggal itu sudah lewat,
+draft akad tidak dibuat. Tanggal tanda tangan harus pada atau setelah tanggal
+keputusan dan sebelum jatuh tempo; tanggal pencairan harus pada atau setelah
+tanggal tanda tangan. Aplikasi GUI menggunakan satu bank dan pegawai contoh,
+tidak memiliki autentikasi, dan menyimpan daftar kasus di memori.
+
+Demo konsol pada `Main` berbeda dari GUI: ia menjalankan contoh Musyarakah
+dengan nilai tetap dan keputusan disetujui yang ditentukan di source. Cabang
+penolakan dan input formulir hanya tersedia pada GUI.
 
 ## Batas alur
 

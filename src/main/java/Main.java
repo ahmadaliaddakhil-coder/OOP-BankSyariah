@@ -12,7 +12,19 @@ import model.RekeningNasabah;
 import model.RiwayatPengajuan;
 import model.Usaha;
 
+/**
+ * Contoh alur domain pembiayaan yang dapat dijalankan dari terminal.
+ */
 public class Main {
+        /** Creates the command-line demo entry point. */
+        public Main() {
+        }
+
+        /**
+         * Menjalankan contoh alur pengajuan hingga pencairan pembiayaan.
+         *
+         * @param args argumen baris perintah (tidak digunakan)
+         */
         public static void main(String[] args) {
                 BankSyariah bank = new BankSyariah("B-001", "Bank Syariah Contoh");
                 PegawaiBank pegawai = new PegawaiBank(
