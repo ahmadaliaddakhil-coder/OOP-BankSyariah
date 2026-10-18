@@ -126,6 +126,7 @@ public class BankSyariahController {
         employeeView.setVisible(false);
         employeeView.setManaged(false);
         updateNavigation(customerNavButton, employeeNavButton);
+        showCustomerDetails(customerTable.getSelectionModel().getSelectedItem());
     }
 
     @FXML
@@ -197,24 +198,24 @@ public class BankSyariahController {
         TextField address = form.text("address");
         DatePicker birthDate = form.date("birthDate", null);
         TextField occupation = form.text("occupation");
-        TextField monthlySalary = form.number("monthlySalary", "");
+        TextField monthlySalary = form.money("monthlySalary", "");
         TextField businessName = form.text("businessName");
         TextField sector = form.text("sector");
         TextField businessAddress = form.text("businessAddress");
         TextField accountNumber = form.text("accountNumber");
-        TextField startingBalance = form.number("startingBalance", "");
-        TextField revenue = form.number("revenue", "");
-        TextField directCosts = form.number("directCosts", "");
-        TextField operatingCosts = form.number("operatingCosts", "");
-        TextField obligations = form.number("obligations", "");
-        TextField amount = form.number("amount", "");
+        TextField startingBalance = form.money("startingBalance", "");
+        TextField revenue = form.money("revenue", "");
+        TextField directCosts = form.money("directCosts", "");
+        TextField operatingCosts = form.money("operatingCosts", "");
+        TextField obligations = form.money("obligations", "");
+        TextField amount = form.money("amount", "");
         TextField tenor = form.number("tenor", "");
         TextField purpose = form.text("purpose");
         ChoiceBox<JenisAkad> akad = form.choice(
                 "akad", JenisAkad.values(), null, BankSyariahController::label);
         TextField bankShare = form.number("bankShare", "");
         TextField customerShare = form.number("customerShare", "");
-        TextField customerCapital = form.number("customerCapital", "0");
+        TextField customerCapital = form.money("customerCapital", "0");
         akad.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, value) -> {
                     boolean musyarakah = value == JenisAkad.MUSYARAKAH;
@@ -294,13 +295,13 @@ public class BankSyariahController {
 
     private void recordAnalysis(CaseRecord record) {
         Form form = new Form("Pemeriksaan Data Keuangan", "/views/financial-review-form.fxml");
-        TextField revenue = form.number("revenue",
+        TextField revenue = form.money("revenue",
                 Long.toString(record.pengajuan.getOmzetBulananDilaporkan()));
-        TextField directCost = form.number("directCost",
+        TextField directCost = form.money("directCost",
                 Long.toString(record.pengajuan.getBiayaLangsungBulananDilaporkan()));
-        TextField operatingCost = form.number("operatingCost",
+        TextField operatingCost = form.money("operatingCost",
                 Long.toString(record.pengajuan.getBiayaOperasionalBulananDilaporkan()));
-        TextField obligations = form.number("obligations",
+        TextField obligations = form.money("obligations",
                 Long.toString(record.pengajuan.getKewajibanUsahaBulananDilaporkan()));
         Label cashFlowPreview = form.control("cashFlowPreview", Label.class);
         updateCashFlowPreview(cashFlowPreview, revenue, directCost, operatingCost, obligations);
@@ -366,17 +367,15 @@ public class BankSyariahController {
         form.control("analysisSummary", Label.class).setText(analysisText);
         ChoiceBox<StatusKeputusan> decision = form.choice(
                 "decision", StatusKeputusan.values(), null, BankSyariahController::label);
-        TextField approvedAmount = form.number("approvedAmount", "");
-        approvedAmount.setDisable(true);
+        Label approvedAmount = form.control("approvedAmount", Label.class);
+        approvedAmount.setText("Pilih keputusan pegawai.");
         decision.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, value) -> {
-                    approvedAmount.setDisable(value != StatusKeputusan.DISETUJUI);
-                    if (value == StatusKeputusan.DITOLAK) {
-                        approvedAmount.setText("0");
-                    } else if (oldValue == StatusKeputusan.DITOLAK) {
-                        approvedAmount.clear();
-                    }
-                });
+                (observable, oldValue, value) -> approvedAmount.setText(
+                        value == null ? "Pilih keputusan pegawai."
+                                : value == StatusKeputusan.DISETUJUI
+                                        ? rupiah(record.pengajuan.getNominal())
+                                                + " (mengikuti nominal pengajuan)"
+                                        : rupiah(0) + " (tidak ada pencairan)"));
         TextField reason = form.text("reason");
         if (!form.show(() -> {
             if (decision.getValue() == null) {
@@ -384,7 +383,8 @@ public class BankSyariahController {
             }
             new KeputusanPembiayaan(
                     "K-VALIDASI", LocalDateTime.now().format(DATE_TIME), record.pengajuan,
-                    pegawai, decision.getValue(), parseAmount(approvedAmount), required(reason));
+                    pegawai, decision.getValue(),
+                    jumlahDisetujui(decision.getValue(), record.pengajuan), required(reason));
         })) {
             return;
         }
@@ -392,7 +392,7 @@ public class BankSyariahController {
             KeputusanPembiayaan result = new KeputusanPembiayaan(
                     nextId("K-", records.size() + 1), LocalDateTime.now().format(DATE_TIME),
                     record.pengajuan, pegawai, decision.getValue(),
-                    parseAmount(approvedAmount), required(reason));
+                    jumlahDisetujui(decision.getValue(), record.pengajuan), required(reason));
             record.pengajuan.catatKeputusan(result);
             record.keputusan = result;
             refreshTables();
@@ -479,12 +479,16 @@ public class BankSyariahController {
             return;
         }
         try {
+            long saldoSebelum = record.rekening.getSaldo();
             Pencairan pencairan = record.pengajuan.getAkad().cairkan(
                     nextId("PC-", records.size() + 1), dateValue(date).toString(),
                     required(reference), record.rekening);
+            long saldoTerbaru = record.rekening.getSaldo();
             refreshTables();
             showDetails(record);
-            showSuccess("Dana berhasil dicairkan. " + rupiah(pencairan.getAkad().getJumlahDisetujui()));
+            showSuccess("Dana berhasil dicairkan sebesar " + rupiah(pencairan.getJumlah())
+                    + ". Saldo rekening bertambah dari " + rupiah(saldoSebelum)
+                    + " menjadi " + rupiah(saldoTerbaru) + ".");
         } catch (IllegalArgumentException | IllegalStateException | ArithmeticException error) {
             showError(error.getMessage());
         }
@@ -553,6 +557,9 @@ public class BankSyariahController {
         }
         if (application.getAkad() != null && application.getAkad().getPencairan() != null) {
             details.append("\n\nRekening setelah pencairan\n")
+                    .append("Dana masuk: ")
+                    .append(rupiah(application.getAkad().getPencairan().getJumlah()))
+                    .append("\nSaldo terbaru: ")
                     .append(rupiah(record.rekening.getSaldo()));
         }
         details.append("\n\nRiwayat");
@@ -658,8 +665,14 @@ public class BankSyariahController {
         if (record.pengajuan.getAkad() != null) {
             details.append("\n\nAKAD: ").append(record.pengajuan.getAkad().getNomorAkad())
                     .append(" (").append(label(record.pengajuan.getAkad().getStatus())).append(")");
+            Pencairan pencairan = record.pengajuan.getAkad().getPencairan();
+            if (pencairan != null) {
+                details.append("\nDana dicairkan: ").append(rupiah(pencairan.getJumlah()))
+                        .append("\nSaldo terbaru setelah pencairan: ")
+                        .append(rupiah(record.rekening.getSaldo()));
+            }
         }
-        details.append("\n\nSaldo rekening saat ini: ")
+        details.append("\n\nSaldo rekening terbaru: ")
                 .append(rupiah(record.rekening.getSaldo()));
         customerDetails.setText(details.toString());
     }
@@ -745,14 +758,46 @@ public class BankSyariahController {
 
     private static long parseAmount(TextInputControl input) {
         try {
-            long value = Long.parseLong(required(input));
+            long value = Long.parseLong(required(input).replace(".", ""));
             if (value < 0) {
                 throw new IllegalArgumentException("Nominal tidak boleh negatif.");
             }
             return value;
         } catch (NumberFormatException error) {
-            throw new IllegalArgumentException("Masukkan nominal berupa angka bulat tanpa pemisah.");
+            throw new IllegalArgumentException("Masukkan nominal berupa angka bulat yang valid.");
         }
+    }
+
+    private static long jumlahDisetujui(
+            StatusKeputusan statusKeputusan,
+            PengajuanPembiayaan pengajuan) {
+        return statusKeputusan == StatusKeputusan.DISETUJUI
+                ? pengajuan.getNominal()
+                : 0L;
+    }
+
+    private static String formatNominalInput(String digits) {
+        StringBuilder formatted = new StringBuilder(digits.length() + digits.length() / 3);
+        for (int i = 0; i < digits.length(); i++) {
+            if (i > 0 && (digits.length() - i) % 3 == 0) {
+                formatted.append('.');
+            }
+            formatted.append(digits.charAt(i));
+        }
+        return formatted.toString();
+    }
+
+    private static int caretAfterDigits(String text, int digitCount) {
+        if (digitCount == 0) {
+            return 0;
+        }
+        int digitsSeen = 0;
+        for (int i = 0; i < text.length(); i++) {
+            if (Character.isDigit(text.charAt(i)) && ++digitsSeen == digitCount) {
+                return i + 1;
+            }
+        }
+        return text.length();
     }
 
     private static long parsePositiveAmount(TextInputControl input) {
@@ -871,6 +916,29 @@ public class BankSyariahController {
             field.setTextFormatter(
                     new TextFormatter<String>(change -> change.getControlNewText().matches("\\d*") ? change : null));
             field.setText(initialValue);
+            return field;
+        }
+
+        private TextField money(String id, String initialValue) {
+            TextField field = text(id);
+            field.setTextFormatter(new TextFormatter<String>(change -> {
+                String candidate = change.getControlNewText();
+                if (!candidate.matches("[\\d.]*")) {
+                    return null;
+                }
+                int caret = Math.min(change.getCaretPosition(), candidate.length());
+                int digitsBeforeCaret = (int) candidate.substring(0, caret)
+                        .chars()
+                        .filter(Character::isDigit)
+                        .count();
+                String formatted = formatNominalInput(candidate.replace(".", ""));
+                int newCaret = caretAfterDigits(formatted, digitsBeforeCaret);
+                change.setRange(0, change.getControlText().length());
+                change.setText(formatted);
+                change.selectRange(newCaret, newCaret);
+                return change;
+            }));
+            field.setText(formatNominalInput(initialValue.replace(".", "")));
             return field;
         }
 

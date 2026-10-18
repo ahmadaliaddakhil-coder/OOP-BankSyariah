@@ -18,15 +18,16 @@
                 <ColumnConstraints hgrow="ALWAYS"/>
             </columnConstraints>
             <children>
-                <Label text="Nilai awal berasal dari pengajuan nasabah." styleClass="hint-text" GridPane.columnSpan="2"/>
+                <Label text="Nilai awal berasal dari pengajuan nasabah. Pemisah ribuan diformat otomatis; pegawai dapat menyesuaikannya setelah pemeriksaan."
+                       styleClass="hint-text" wrapText="true" GridPane.columnSpan="2"/>
                 <Label text="Omzet bulanan" GridPane.rowIndex="1"/>
-                <TextField fx:id="revenue" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <TextField fx:id="revenue" promptText="Contoh: 30.000.000" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 <Label text="Biaya langsung" GridPane.rowIndex="2"/>
-                <TextField fx:id="directCost" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                <TextField fx:id="directCost" promptText="Contoh: 12.000.000" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 <Label text="Biaya operasional" GridPane.rowIndex="3"/>
-                <TextField fx:id="operatingCost" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                <TextField fx:id="operatingCost" promptText="Contoh: 8.000.000" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                 <Label text="Kewajiban usaha" GridPane.rowIndex="4"/>
-                <TextField fx:id="obligations" promptText="Angka tanpa titik/koma" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <TextField fx:id="obligations" promptText="Contoh: 3.000.000" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                 <Label text="Arus kas = omzet - biaya langsung - biaya operasional - kewajiban."
                        wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="5"/>
                 <Label text="Arus kas tersedia" GridPane.rowIndex="6"/>

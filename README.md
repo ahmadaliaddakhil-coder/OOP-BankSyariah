@@ -20,12 +20,16 @@ Maven Wrapper. Dari PowerShell pada folder proyek, jalankan:
 Pilih menu **Tampilan** untuk berpindah antara halaman **Nasabah** dan
 **Pegawai**. Nasabah memasukkan pekerjaan dan gaji yang diterima per bulan pada
 profil, lalu omzet, biaya langsung, biaya operasional, dan kewajiban usaha pada
-formulir pengajuan. Setelah pengajuan dibuat, nasabah dapat memilih baris untuk
-melihat kembali rincian lengkapnya. Pegawai melihat profil nasabah, rekening,
-usaha, pembiayaan, dan laporan keuangan; lalu memeriksa angka yang sama,
-melihat rumus dan hasil arus kas, lalu mengambil tiap langkah secara terpisah:
-keputusan, draft akad, tanda tangan, dan pencairan. Aplikasi belum mengecek
-dokumen penghasilan, riwayat kredit, atau pengeluaran pribadi, sehingga tidak
+formulir pengajuan. Nominal uang diformat dengan pemisah ribuan titik saat
+dimasukkan. Setelah pengajuan dibuat, nasabah dapat memilih baris untuk melihat
+kembali rincian lengkapnya. Pegawai melihat profil nasabah, rekening, usaha,
+pembiayaan, dan laporan keuangan; lalu memeriksa angka yang sama, melihat rumus
+dan hasil arus kas, lalu mengambil tiap langkah secara terpisah: keputusan,
+draft akad, tanda tangan, dan pencairan. Jika disetujui, jumlah persetujuan dan
+pencairan otomatis mengikuti nominal pengajuan dan rekening tujuan yang sudah
+diisi nasabah; pegawai tidak perlu memasukkannya ulang. Setelah pencairan,
+saldo rekening terbaru ditampilkan. Aplikasi belum mengecek dokumen
+penghasilan, riwayat kredit, atau pengeluaran pribadi, sehingga tidak
 mengklaim dapat memastikan kredibilitas maupun kemampuan bayar. Tidak ada
 angka contoh keuangan yang diisikan otomatis. Antarmuka merupakan demo tanpa
 login sehingga kedua sisi melihat daftar pengajuan yang sama. Data disimpan di

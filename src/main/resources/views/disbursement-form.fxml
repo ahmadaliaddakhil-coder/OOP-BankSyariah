@@ -14,9 +14,9 @@
             <padding><Insets top="14.0" right="4.0" bottom="8.0" left="4.0"/></padding>
             <columnConstraints><ColumnConstraints minWidth="190.0"/><ColumnConstraints hgrow="ALWAYS"/></columnConstraints>
             <children>
-                <Label text="Jumlah pencairan" GridPane.rowIndex="0"/>
+                <Label text="Jumlah dicairkan (otomatis)" GridPane.rowIndex="0"/>
                 <Label fx:id="amount" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
-                <Label text="Rekening tujuan" GridPane.rowIndex="1"/>
+                <Label text="Rekening tujuan (dari pengajuan)" GridPane.rowIndex="1"/>
                 <Label fx:id="account" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 <Label text="Tanggal pencairan" GridPane.rowIndex="2"/>
                 <DatePicker fx:id="date" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2"/>

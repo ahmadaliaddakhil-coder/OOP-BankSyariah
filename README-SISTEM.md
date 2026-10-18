@@ -165,19 +165,22 @@ yang dicairkan. Pencairan dilakukan sekaligus, bukan beberapa tahap.
 7. Pegawai menetapkan keputusan pada langkah terpisah setelah membaca hasil.
    - Jika ditolak, status menjadi `DITOLAK`, riwayat diperbarui, lalu alur
      selesai tanpa akad atau pencairan.
-   - Jika disetujui, status menjadi `DISETUJUI` dan riwayat diperbarui.
+   - Jika disetujui melalui GUI, status menjadi `DISETUJUI` dan riwayat
+     diperbarui. Jumlah persetujuan otomatis mengikuti penuh nominal pengajuan;
+     pegawai tidak memasukkan ulang jumlahnya.
 8. Pegawai membuat draft akad pada langkah terpisah.
    `PengajuanPembiayaan.buatAkad(...)` meminta `PembuatAkad` membuat
    `AkadMudharabah` atau `AkadMusyarakah` mengikuti jenis akad pada pengajuan.
 9. Pegawai menandatangani draft akad; status berubah menjadi
    `MENUNGGU_PENCAIRAN`.
-10. Pegawai memproses pencairan. `AkadPembiayaan.cairkan(...)` mencairkan tepat
-    satu kali dengan nilai sama
-    dengan jumlah yang disetujui.
+10. Pegawai memproses pencairan. Nominal dan rekening tujuan diambil dari
+    pengajuan/akad; pegawai hanya mengisi tanggal dan referensi transaksi.
+    `AkadPembiayaan.cairkan(...)` mencairkan tepat satu kali dengan jumlah yang
+    disetujui.
 11. Jika data pencairan valid, rekening nasabah dikredit dan status akad
     menjadi `DICAIRKAN`.
-12. Demo menampilkan nominal pencairan, saldo baru, dan riwayat pengajuan,
-    lalu selesai.
+12. GUI memperbarui detail nasabah dan menampilkan dana masuk serta saldo
+    rekening terbaru. Demo kemudian selesai.
 
 Flowchart visual ada di [UML-DAN-FLOWCHART.md](./UML-DAN-FLOWCHART.md).
 

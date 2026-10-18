@@ -418,11 +418,11 @@ flowchart TD
     E --> F[Pegawai meninjau dan mengonfirmasi laporan keuangan]
     F --> G[Catat DIPROSES, analisis, dan riwayat status]
     G --> H[Tampilkan laba, arus kas, dan rekomendasi internal]
-    H --> I[Pegawai memilih keputusan dan jumlah persetujuan]
+    H --> I[Pegawai memilih keputusan dan mengisi alasan]
     I --> J{Keputusan}
     J -- Ditolak --> K[Catat DITOLAK dan alasan]
     K --> L([Selesai tanpa akad])
-    J -- Disetujui --> M[Catat DISETUJUI dan jumlah]
+    J -- Disetujui --> M[Catat DISETUJUI dengan nominal penuh dari pengajuan]
     M --> N[Pengajuan meminta PembuatAkad membuat draft]
     N --> O{Jenis akad}
     O -- Mudharabah --> P[AkadMudharabah berstatus DRAFT]
@@ -453,7 +453,7 @@ flowchart TD
     H --> I[pengajuan.catatAnalisis]
     I --> J[Tampilkan rekomendasi internal kepada pegawai]
     J --> K[Pegawai membuka form keputusan]
-    K --> L[Pilih status, jumlah disetujui bila setuju, dan alasan]
+    K --> L[Pilih status dan isi alasan keputusan]
     L --> M{Data keputusan valid?}
     M -- Tidak --> K
     M -- Ya --> N[pengajuan.catatKeputusan dan simpan pada CaseRecord]
@@ -461,7 +461,9 @@ flowchart TD
     O -- Ditolak --> P[Status DITOLAK dan riwayat bertambah]
     P --> Q([Selesai tanpa akad])
     O -- Disetujui --> R[Status DISETUJUI dan riwayat bertambah]
-    R --> S[Hitung jatuh tempo dari tanggal pengajuan dan tenor]
+    R0[Jumlah persetujuan otomatis memakai nominal penuh pengajuan]
+    R --> R0
+    R0 --> S[Hitung jatuh tempo dari tanggal pengajuan dan tenor]
     S --> T{Jatuh tempo masih berlaku?}
     T -- Tidak --> T0([Kembali ke detail; akad belum dibuat])
     T -- Ya --> U[pengajuan.buatAkad memanggil PembuatAkad]
