@@ -8,7 +8,7 @@ penuh ke rekening nasabah. Riwayat status pengajuan dicatat dengan linked list.
 Proyek menyediakan antarmuka desktop JavaFX dan demo konsol. Data hanya
 disimpan di memori selama aplikasi berjalan; belum ada login atau database.
 
-## Menjalankan GUI JavaFX
+## Menjalankan Antarmuka Digital Banking Syariah
 
 Dibutuhkan JDK 21 atau yang lebih baru. Maven akan disiapkan otomatis oleh
 Maven Wrapper. Dari PowerShell pada folder proyek, jalankan:
@@ -17,31 +17,27 @@ Maven Wrapper. Dari PowerShell pada folder proyek, jalankan:
 .\mvnw.cmd javafx:run
 ```
 
-Pilih menu **Tampilan** untuk berpindah antara halaman **Nasabah** dan
-**Pegawai**. Nasabah memasukkan pekerjaan dan gaji yang diterima per bulan pada
-profil, lalu omzet, biaya langsung, biaya operasional, dan kewajiban usaha pada
-formulir pengajuan. Nominal uang diformat dengan pemisah ribuan titik saat
-dimasukkan. Setelah pengajuan dibuat, nasabah dapat memilih baris untuk melihat
-kembali rincian lengkapnya. Pegawai melihat profil nasabah, rekening, usaha,
-pembiayaan, dan laporan keuangan; lalu memeriksa angka yang sama, melihat rumus
-dan hasil arus kas, lalu mengambil tiap langkah secara terpisah: keputusan,
-draft akad, tanda tangan, dan pencairan. Jika disetujui, jumlah persetujuan dan
-pencairan otomatis mengikuti nominal pengajuan dan rekening tujuan yang sudah
-diisi nasabah; pegawai tidak perlu memasukkannya ulang. Setelah pencairan,
-saldo rekening terbaru ditampilkan. Aplikasi belum mengecek dokumen
-penghasilan, riwayat kredit, atau pengeluaran pribadi, sehingga tidak
-mengklaim dapat memastikan kredibilitas maupun kemampuan bayar. Tidak ada
-angka contoh keuangan yang diisikan otomatis. Antarmuka merupakan demo tanpa
-login sehingga kedua sisi melihat daftar pengajuan yang sama. Data disimpan di
-memori dan kembali kosong saat aplikasi ditutup.
+Aplikasi hadir dengan antarmuka **Digital Internet Banking Syariah Modern**:
+1. **Sistem Sesi & Akun Nasabah:**
+   * Terdapat fitur **`+ Daftar Akun Baru`** untuk onboarding nasabah baru dengan rekening tabungan otomatis.
+   * Terdapat tombol **`⎋ Keluar / Ganti Akun`** di topbar dan sidebar untuk beralih sesi antara nasabah terdaftar (Siti Rahma, Hendra Pratama, atau akun buatan Anda) maupun masuk ke portal Analis Bank.
+2. **Dashboard Nasabah (70% Tabel & Stepper | 30% Panel Rincian):**
+   * Metrik 3-kolom: Total Plafon Aktif, Saldo Rekening Terdaftar, dan Status Berkas Terkini.
+   * Tabel pengajuan per nasabah yang dilengkapi kolom tanggal pengajuan.
+   * Tracking tahapan progres (stepper) 5 langkah: *Pengajuan ➔ Analisis Usaha ➔ Keputusan Komite ➔ Akad Digital ➔ Pencairan Dana*.
+   * Formulir **`+ Ajukan Pembiayaan Baru`** otomatis mengisikan data diri nasabah yang sedang aktif.
+3. **Portal Analis Bank:**
+   * Antrean pengajuan masuk dari seluruh nasabah.
+   * Pencarian berkas berdasarkan nomor, nama nasabah, atau usaha.
+   * *Action Hub* untuk melakukan pemeriksaan keuangan usaha, keputusan komite, penerbitan akad, tanda tangan digital, dan eksekusi pencairan dana ke rekening.
+4. **Panduan Prinsip Syariah:**
+   * Tombol **`Pelajari Akad Syariah (?)`** untuk membuka pop-up edukasi perbedaan dan fatwa DSN-MUI akad Mudharabah dan Musyarakah.
 
 Struktur tampilan dan formulir proses menggunakan FXML di
-`src/main/resources/views`, sedangkan stylesheet ada di `src/main/resources/css`.
+`src/main/resources/views`, sedangkan stylesheet ada di `src/main/resources/css/app.css`.
 File `.fxml` dapat dibuka dan diatur dengan JavaFX Scene Builder. `BankSyariahApp`
 menjalankan aplikasi, sedangkan logika tombol, validasi, dan komunikasi dengan
-model berada di `BankSyariahController`. Tampilan menggunakan layout kerja
-desktop dengan palet netral dan aksen hijau yang konsisten, didefinisikan di
-`css/app.css`.
+model berada di `BankSyariahController`.
 
 `Main` tetap menyediakan demo konsol. Kompilasi proyek dengan:
 

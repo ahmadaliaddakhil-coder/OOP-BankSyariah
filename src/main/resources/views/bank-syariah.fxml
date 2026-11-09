@@ -2,133 +2,268 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane styleClass="app-shell"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="ui.BankSyariahController" prefWidth="1240.0" prefHeight="780.0">
+            fx:controller="ui.BankSyariahController" prefWidth="1280.0" prefHeight="820.0">
+
+    <!-- TOPBAR: ULTRA-MINIMALIST SHARIA CORPORATE HEADER -->
+    <top>
+        <HBox styleClass="web-topbar" alignment="CENTER_LEFT">
+            <!-- Brand Logo: Refined, compact monogram + typography -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+                <HBox styleClass="brand-emblem-minimal">
+                    <Label text="BS" styleClass="brand-emblem-minimal-text"/>
+                </HBox>
+                <Label text="BERKAH SYARIAH" styleClass="brand-title-minimal"/>
+                <Label text="|" styleClass="brand-divider-minimal"/>
+                <Label text="Internet Banking" styleClass="brand-subtitle-minimal"/>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Right Controls: Ultra-clean 2-element layout (Help Link + Profile Trigger) -->
+            <HBox alignment="CENTER_RIGHT" spacing="16.0">
+                <Button text="Panduan Akad Syariah  (?)" styleClass="topbar-clean-link"
+                        onAction="#openAkadEducationModal"/>
+
+                <Button fx:id="topProfileButton" styleClass="topbar-profile-trigger"
+                        onAction="#handleLogout">
+                    <graphic>
+                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                            <HBox styleClass="avatar-circle-sm">
+                                <Label fx:id="topAvatarInitials" text="SR" styleClass="avatar-initials-sm"/>
+                            </HBox>
+                            <VBox alignment="CENTER_LEFT" spacing="1.0">
+                                <Label fx:id="topUserName" text="Siti Rahma" styleClass="topbar-user-name"/>
+                                <Label fx:id="topUserRole" text="Nasabah Aktif" styleClass="topbar-user-sub"/>
+                            </VBox>
+                            <Label text="▾" styleClass="topbar-caret"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- SIDEBAR: CLEAN PURE NAVIGATION -->
     <left>
-        <VBox styleClass="sidebar" prefWidth="190.0" minWidth="170.0" spacing="5.0">
-            <padding>
-                <Insets top="24.0" right="16.0" bottom="18.0" left="16.0"/>
-            </padding>
-            <Label text="BERKAH" styleClass="brand-title"/>
-            <Label text="kelompok 5" styleClass="brand-caption"/>
-            <Region minHeight="30.0"/>
-            <Label text="MENU" styleClass="sidebar-heading"/>
-            <Button fx:id="customerNavButton" text="Nasabah"
-                    styleClass="nav-button" maxWidth="Infinity"
+        <VBox styleClass="web-sidebar" prefWidth="220.0" minWidth="200.0" maxWidth="240.0">
+            <Label text="MENU UTAMA" styleClass="sidebar-category-header"/>
+            <Button fx:id="customerNavButton" text="📊  Dashboard Nasabah"
+                    styleClass="web-nav-button" maxWidth="Infinity"
                     onAction="#showCustomerView"/>
-            <Button fx:id="employeeNavButton" text="Pegawai"
-                    styleClass="nav-button" maxWidth="Infinity"
+            <Button fx:id="employeeNavButton" text="💼  Portal Analis Bank"
+                    styleClass="web-nav-button" maxWidth="Infinity"
                     onAction="#showEmployeeView"/>
+            <Button text="➕  Daftar Akun Baru"
+                    styleClass="web-nav-button" maxWidth="Infinity"
+                    onAction="#registerNewAccount"/>
+
             <Region VBox.vgrow="ALWAYS"/>
+
+            <!-- Compact Help / Sharia Info Box -->
+            <VBox styleClass="sidebar-help-box">
+                <Label text="Panduan Prinsip Syariah" styleClass="sidebar-help-title"/>
+                <Label text="Pelajari ketentuan bagi hasil dan perbedaan Mudharabah vs Musyarakah." styleClass="sidebar-help-desc" wrapText="true"/>
+                <Button text="Lihat Perbedaan Akad →" styleClass="sidebar-help-btn" onAction="#openAkadEducationModal"/>
+            </VBox>
+
+            <Button text="⎋  Keluar / Ganti Akun"
+                    styleClass="web-nav-button" maxWidth="Infinity"
+                    style="-fx-text-fill: #b91c1c; -fx-font-weight: bold;"
+                    onAction="#handleLogout"/>
+
+            <Label text="Layanan Bantuan: 1500-789&#10;Terdaftar &amp; Diawasi OJK / DPS"
+                   style="-fx-font-size: 10px; -fx-text-fill: #94a3b8; -fx-padding: 8 6 0 6;"/>
         </VBox>
     </left>
+
+    <!-- CENTER WORKSPACE -->
     <center>
-        <BorderPane styleClass="workspace">
-            <top>
-                <HBox styleClass="topbar" alignment="CENTER_LEFT">
-                    <VBox spacing="4.0" HBox.hgrow="ALWAYS">
-                        <Label text="Sistem Pembiayaan Bank Syariah"
-                               styleClass="topbar-title"/>
-                        <Label text="Akad Mudharabah dan Musyarakah"
-                               styleClass="muted-text"/>
-                    </VBox>
-                </HBox>
-            </top>
-            <center>
-                <StackPane>
-                    <padding>
-                        <Insets top="20.0" right="24.0" bottom="24.0" left="24.0"/>
-                    </padding>
-                    <children>
-                        <VBox fx:id="customerView" styleClass="page-view"
-                              visible="true" managed="true">
-                            <HBox styleClass="page-heading" alignment="CENTER_LEFT">
-                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                    <Label text="Pengajuan nasabah" styleClass="page-title"/>
-                                    <Label text="Buat pengajuan dan lihat detail serta statusnya."
-                                           styleClass="muted-text"/>
+        <StackPane styleClass="workspace">
+            <children>
+
+                <!-- ==================== CUSTOMER DASHBOARD ==================== -->
+                <ScrollPane fx:id="customerScrollPane" fitToWidth="true" styleClass="workspace-scroll"
+                            visible="true" managed="true">
+                    <content>
+                        <VBox styleClass="workspace-container">
+
+                            <!-- Header: Greeting & Primary CTA -->
+                            <HBox alignment="CENTER_LEFT" spacing="16.0">
+                                <VBox spacing="3.0" HBox.hgrow="ALWAYS">
+                                    <Label fx:id="customerGreetingTitle" text="Selamat Datang Kembali, Siti Rahma!" styleClass="greeting-title"/>
+                                    <Label fx:id="customerGreetingSubtitle" text="Berikut adalah ringkasan fasilitas pembiayaan modal usaha dan rekening aktif Anda." styleClass="greeting-subtitle"/>
                                 </VBox>
-                                <Button text="Ajukan pembiayaan"
-                                        onAction="#createApplication"
-                                        styleClass="primary-button"/>
+                                <Button text="+ Ajukan Pembiayaan Baru"
+                                        styleClass="primary-cta-button"
+                                        onAction="#createApplication"/>
                             </HBox>
-                            <HBox styleClass="content-row" VBox.vgrow="ALWAYS">
-                                <VBox styleClass="list-panel" HBox.hgrow="ALWAYS"
-                                      VBox.vgrow="ALWAYS">
-                                    <HBox alignment="CENTER_LEFT" spacing="8.0">
-                                        <Label text="Daftar pengajuan" styleClass="section-title"
-                                               HBox.hgrow="ALWAYS"/>
-                                        <Label text="Pilih pengajuan untuk melihat rincian"
-                                               styleClass="hint-text"/>
-                                    </HBox>
-                                    <TableView fx:id="customerTable" VBox.vgrow="ALWAYS">
-                                        <columns>
-                                            <TableColumn fx:id="customerIdColumn" text="Nomor"/>
-                                            <TableColumn fx:id="customerAkadColumn" text="Akad"/>
-                                            <TableColumn fx:id="customerAmountColumn" text="Nominal"/>
-                                            <TableColumn fx:id="customerStatusColumn" text="Status"/>
-                                        </columns>
-                                    </TableView>
+
+                            <!-- TOP METRICS (3-COLUMN GRID - ZERO REDUNDANCY) -->
+                            <HBox styleClass="metric-grid">
+                                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                                    <Label text="TOTAL PLAFON AKTIF" styleClass="metric-label"/>
+                                    <Label fx:id="customerMetric1Value" text="Rp 0" styleClass="metric-value"/>
+                                    <Label fx:id="customerMetric1Sub" text="1 Fasilitas Pembiayaan Berjalan" styleClass="metric-subtext"/>
                                 </VBox>
-                                <VBox styleClass="detail-panel" prefWidth="390.0"
-                                      minWidth="330.0" maxWidth="430.0" spacing="12.0">
-                                    <Label text="Detail pengajuan" styleClass="section-title"/>
-                                    <TextArea fx:id="customerDetails" editable="false"
-                                              wrapText="true" VBox.vgrow="ALWAYS"/>
+                                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                                    <Label text="SALDO REKENING TERDAFTAR" styleClass="metric-label"/>
+                                    <Label fx:id="customerMetric2Value" text="Rp 0" styleClass="metric-value" style="-fx-text-fill: #0b4635;"/>
+                                    <Label fx:id="customerMetric2Sub" text="Rekening Tabungan Bisnis Berkah" styleClass="metric-subtext"/>
+                                </VBox>
+                                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                                    <Label text="STATUS PENGAJUAN TERAKHIR" styleClass="metric-label"/>
+                                    <Label fx:id="customerMetric3Value" text="-" styleClass="metric-value" style="-fx-font-size: 18px;"/>
+                                    <Label fx:id="customerMetric3Sub" text="Posisi tahapan saat ini" styleClass="metric-subtext"/>
                                 </VBox>
                             </HBox>
+
+                            <!-- MAIN CONTENT: 70% LEFT (TABLE + STEPPER) | 30% RIGHT (DETAIL PANEL) -->
+                            <HBox styleClass="main-layout-split" VBox.vgrow="ALWAYS">
+
+                                <!-- LEFT SIDE (70%): Table & Stepper directly below -->
+                                <VBox spacing="16.0" HBox.hgrow="ALWAYS" prefWidth="760.0">
+                                    <!-- Table Card -->
+                                    <VBox styleClass="clean-card" VBox.vgrow="ALWAYS">
+                                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                            <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                                                <Label text="Daftar Pengajuan Pembiayaan Anda" styleClass="section-header-title"/>
+                                                <Label text="Pilih baris pengajuan untuk meninjau status dan rincian akad" styleClass="section-subtitle"/>
+                                            </VBox>
+                                        </HBox>
+                                        <TableView fx:id="customerTable" VBox.vgrow="ALWAYS" prefHeight="330.0">
+                                            <columns>
+                                                <TableColumn fx:id="customerIdColumn" text="No. Pengajuan" prefWidth="110.0"/>
+                                                <TableColumn fx:id="customerDateColumn" text="Tanggal" prefWidth="105.0"/>
+                                                <TableColumn fx:id="customerAkadColumn" text="Akad" prefWidth="115.0"/>
+                                                <TableColumn fx:id="customerAmountColumn" text="Plafon Diajukan" prefWidth="160.0"/>
+                                                <TableColumn fx:id="customerStatusColumn" text="Status" prefWidth="130.0"/>
+                                            </columns>
+                                        </TableView>
+                                    </VBox>
+
+                                    <!-- Stepper: Placed directly below table -->
+                                    <VBox styleClass="stepper-container">
+                                        <Label text="TRACKING TAHAPAN PENGAJUAN AKTIF" styleClass="stepper-title"/>
+                                        <HBox fx:id="customerStepper" styleClass="stepper-row" alignment="CENTER"/>
+                                    </VBox>
+                                </VBox>
+
+                                <!-- RIGHT SIDE (30%): Consolidated Detail Panel -->
+                                <VBox styleClass="clean-card" prefWidth="380.0" minWidth="340.0" maxWidth="420.0">
+                                    <Label text="Rincian Pembiayaan Terpilih" styleClass="section-header-title"/>
+                                    <ScrollPane fitToWidth="true" styleClass="scroll-pane" prefHeight="480.0" VBox.vgrow="ALWAYS">
+                                        <content>
+                                            <VBox fx:id="customerRightPanel" spacing="14.0"/>
+                                        </content>
+                                    </ScrollPane>
+                                </VBox>
+
+                            </HBox>
+
                         </VBox>
-                        <VBox fx:id="employeeView" styleClass="page-view"
-                              visible="false" managed="false">
-                            <HBox styleClass="page-heading" alignment="CENTER_LEFT">
-                                <VBox spacing="5.0" HBox.hgrow="ALWAYS">
-                                    <Label text="Daftar pengajuan" styleClass="page-title"/>
-                                    <Label text="Periksa profil dan data usaha sebelum melanjutkan proses."
-                                           styleClass="muted-text"/>
+                    </content>
+                </ScrollPane>
+
+
+                <!-- ==================== EMPLOYEE / ANALYST PORTAL ==================== -->
+                <ScrollPane fx:id="employeeScrollPane" fitToWidth="true" styleClass="workspace-scroll"
+                            visible="false" managed="false">
+                    <content>
+                        <VBox styleClass="workspace-container">
+
+                            <!-- Header: Analyst Greeting -->
+                            <HBox alignment="CENTER_LEFT" spacing="16.0">
+                                <VBox spacing="3.0" HBox.hgrow="ALWAYS">
+                                    <Label text="Portal Analis Pembiayaan &amp; Komite" styleClass="greeting-title"/>
+                                    <Label text="Kelola verifikasi keuangan usaha, penetapan persetujuan komite, akad, dan pencairan dana." styleClass="greeting-subtitle"/>
                                 </VBox>
-                                <Label fx:id="employeeIdentity" styleClass="employee-identity"/>
+                                <Label fx:id="employeeBadge" text="Senior Financing Analyst" styleClass="status-pill, status-diproses"/>
                             </HBox>
-                            <HBox styleClass="content-row" VBox.vgrow="ALWAYS">
-                                <VBox styleClass="list-panel" HBox.hgrow="ALWAYS"
-                                      VBox.vgrow="ALWAYS">
-                                    <Label text="Pengajuan masuk" styleClass="section-title"/>
-                                    <TextField fx:id="search"
-                                               promptText="Cari nama, usaha, atau nomor pengajuan"/>
-                                    <TableView fx:id="employeeTable" VBox.vgrow="ALWAYS">
-                                        <columns>
-                                            <TableColumn fx:id="employeeIdColumn" text="Nomor"/>
-                                            <TableColumn fx:id="employeeCustomerColumn" text="Nasabah"/>
-                                            <TableColumn fx:id="employeeBusinessColumn" text="Usaha"/>
-                                            <TableColumn fx:id="employeeAmountColumn" text="Nominal"/>
-                                            <TableColumn fx:id="employeeStatusColumn" text="Status"/>
-                                        </columns>
-                                    </TableView>
+
+                            <!-- TOP METRICS (3-COLUMN GRID) -->
+                            <HBox styleClass="metric-grid">
+                                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                                    <Label text="TOTAL PENGAJUAN MASUK" styleClass="metric-label"/>
+                                    <Label fx:id="employeeMetric1Value" text="0 Berkas" styleClass="metric-value"/>
+                                    <Label fx:id="employeeMetric1Sub" text="Seluruh pengajuan terdaftar" styleClass="metric-subtext"/>
                                 </VBox>
-                                <VBox styleClass="detail-panel" prefWidth="410.0"
-                                      minWidth="350.0" maxWidth="450.0" spacing="12.0">
-                                    <Label fx:id="selectedTitle"
-                                           text="Pilih pengajuan untuk melihat detail"
-                                           styleClass="section-title" wrapText="true"/>
-                                    <TextArea fx:id="selectedContent" editable="false"
-                                              wrapText="true" VBox.vgrow="ALWAYS"/>
-                                    <VBox fx:id="selectedActions" spacing="8.0"/>
+                                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                                    <Label text="MENUNGGU PEMERIKSAAN / KEPUTUSAN" styleClass="metric-label"/>
+                                    <Label fx:id="employeeMetric2Value" text="0 Berkas" styleClass="metric-value" style="-fx-text-fill: #a16207;"/>
+                                    <Label fx:id="employeeMetric2Sub" text="Perlu tindakan analis/komite" styleClass="metric-subtext"/>
+                                </VBox>
+                                <VBox styleClass="metric-card" HBox.hgrow="ALWAYS">
+                                    <Label text="TOTAL REALISASI PENCAIRAN" styleClass="metric-label"/>
+                                    <Label fx:id="employeeMetric3Value" text="Rp 0" styleClass="metric-value" style="-fx-text-fill: #047857;"/>
+                                    <Label fx:id="employeeMetric3Sub" text="Dana sukses dicairkan ke rekening" styleClass="metric-subtext"/>
                                 </VBox>
                             </HBox>
+
+                            <!-- MAIN CONTENT: 70% LEFT (TABLE + SEARCH + STEPPER) | 30% RIGHT (ACTION & DETAILS) -->
+                            <HBox styleClass="main-layout-split" VBox.vgrow="ALWAYS">
+
+                                <!-- LEFT SIDE (70%): Search, Table & Stepper directly below -->
+                                <VBox spacing="16.0" HBox.hgrow="ALWAYS" prefWidth="760.0">
+                                    <!-- Table Card -->
+                                    <VBox styleClass="clean-card" VBox.vgrow="ALWAYS">
+                                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                            <VBox spacing="2.0" HBox.hgrow="ALWAYS">
+                                                <Label text="Antrean Berkas Pengajuan Masuk" styleClass="section-header-title"/>
+                                                <Label text="Pilih baris pengajuan untuk memeriksa data dan menjalankan tahapan proses" styleClass="section-subtitle"/>
+                                            </VBox>
+                                            <TextField fx:id="search" styleClass="search-field" prefWidth="280.0"
+                                                       promptText="🔍 Cari nomor, nasabah, atau usaha..."/>
+                                        </HBox>
+                                        <TableView fx:id="employeeTable" VBox.vgrow="ALWAYS" prefHeight="330.0">
+                                            <columns>
+                                                <TableColumn fx:id="employeeIdColumn" text="No. Pengajuan" prefWidth="105.0"/>
+                                                <TableColumn fx:id="employeeDateColumn" text="Tanggal" prefWidth="100.0"/>
+                                                <TableColumn fx:id="employeeCustomerColumn" text="Nasabah" prefWidth="130.0"/>
+                                                <TableColumn fx:id="employeeBusinessColumn" text="Usaha" prefWidth="130.0"/>
+                                                <TableColumn fx:id="employeeAmountColumn" text="Plafon" prefWidth="140.0"/>
+                                                <TableColumn fx:id="employeeStatusColumn" text="Status" prefWidth="120.0"/>
+                                            </columns>
+                                        </TableView>
+                                    </VBox>
+
+                                    <!-- Stepper: Placed directly below table -->
+                                    <VBox styleClass="stepper-container">
+                                        <Label text="TRACKING TAHAPAN WORKFLOW PENGAJUAN" styleClass="stepper-title"/>
+                                        <HBox fx:id="employeeStepper" styleClass="stepper-row" alignment="CENTER"/>
+                                    </VBox>
+                                </VBox>
+
+                                <!-- RIGHT SIDE (30%): Action Hub & Consolidated Details -->
+                                <VBox styleClass="clean-card" prefWidth="390.0" minWidth="350.0" maxWidth="430.0">
+                                    <Label text="Pusat Tindakan &amp; Rincian Berkas" styleClass="section-header-title"/>
+                                    <ScrollPane fitToWidth="true" styleClass="scroll-pane" prefHeight="480.0" VBox.vgrow="ALWAYS">
+                                        <content>
+                                            <VBox fx:id="employeeRightPanel" spacing="14.0"/>
+                                        </content>
+                                    </ScrollPane>
+                                </VBox>
+
+                            </HBox>
+
                         </VBox>
-                    </children>
-                </StackPane>
-            </center>
-        </BorderPane>
+                    </content>
+                </ScrollPane>
+
+            </children>
+        </StackPane>
     </center>
+
 </BorderPane>
