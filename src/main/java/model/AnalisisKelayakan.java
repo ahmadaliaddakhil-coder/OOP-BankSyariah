@@ -1,7 +1,10 @@
 package model;
 
+import java.math.BigDecimal;
+import util.Uang;
+
 /**
- * Menyimpan hasil pemeriksaan keuangan usaha untuk suatu pengajuan pembiayaan.
+ * Menyimpan hasil pemeriksaan keuangan usaha untuk suatu pengajuan pembiayaan berbasis BigDecimal.
  */
 public class AnalisisKelayakan {
     /** Rekomendasi internal berdasarkan arus kas tersedia bulanan. */
@@ -18,10 +21,10 @@ public class AnalisisKelayakan {
     private final String tanggalAnalisis;
     private final PengajuanPembiayaan pengajuan;
     private final PegawaiBank pegawaiAnalisis;
-    private final long omzetBulanan;
-    private final long biayaLangsungBulanan;
-    private final long biayaOperasionalBulanan;
-    private final long kewajibanUsahaBulanan;
+    private final BigDecimal omzetBulanan;
+    private final BigDecimal biayaLangsungBulanan;
+    private final BigDecimal biayaOperasionalBulanan;
+    private final BigDecimal kewajibanUsahaBulanan;
     private final String catatanRisiko;
 
     /**
@@ -36,18 +39,17 @@ public class AnalisisKelayakan {
      * @param biayaOperasionalBulanan biaya operasional bulanan dalam rupiah
      * @param kewajibanUsahaBulanan kewajiban usaha bulanan dalam rupiah
      * @param catatanRisiko catatan risiko hasil analisis
-     * @throws IllegalArgumentException jika data wajib kosong/null atau nilai keuangan
-     *         negatif
+     * @throws IllegalArgumentException jika data wajib kosong/null atau nilai keuangan negatif
      */
     public AnalisisKelayakan(
             String idAnalisis,
             String tanggalAnalisis,
             PengajuanPembiayaan pengajuan,
             PegawaiBank pegawaiAnalisis,
-            long omzetBulanan,
-            long biayaLangsungBulanan,
-            long biayaOperasionalBulanan,
-            long kewajibanUsahaBulanan,
+            BigDecimal omzetBulanan,
+            BigDecimal biayaLangsungBulanan,
+            BigDecimal biayaOperasionalBulanan,
+            BigDecimal kewajibanUsahaBulanan,
             String catatanRisiko) {
         if (idAnalisis == null || idAnalisis.trim().isEmpty()) {
             throw new IllegalArgumentException("ID analisis wajib diisi");
@@ -61,10 +63,11 @@ public class AnalisisKelayakan {
         if (pegawaiAnalisis == null) {
             throw new IllegalArgumentException("Pegawai penganalisis tidak boleh null");
         }
-        if (omzetBulanan < 0 || biayaLangsungBulanan < 0
-                || biayaOperasionalBulanan < 0 || kewajibanUsahaBulanan < 0) {
-            throw new IllegalArgumentException(
-                    "Data keuangan usaha tidak boleh negatif");
+        if (omzetBulanan == null || omzetBulanan.compareTo(BigDecimal.ZERO) < 0
+                || biayaLangsungBulanan == null || biayaLangsungBulanan.compareTo(BigDecimal.ZERO) < 0
+                || biayaOperasionalBulanan == null || biayaOperasionalBulanan.compareTo(BigDecimal.ZERO) < 0
+                || kewajibanUsahaBulanan == null || kewajibanUsahaBulanan.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Data keuangan usaha tidak boleh negatif atau null");
         }
         if (catatanRisiko == null || catatanRisiko.trim().isEmpty()) {
             throw new IllegalArgumentException("Catatan risiko wajib diisi");
@@ -122,7 +125,7 @@ public class AnalisisKelayakan {
      *
      * @return omzet bulanan dalam rupiah
      */
-    public long getOmzetBulanan() {
+    public BigDecimal getOmzetBulanan() {
         return omzetBulanan;
     }
 
@@ -131,7 +134,7 @@ public class AnalisisKelayakan {
      *
      * @return biaya langsung bulanan dalam rupiah
      */
-    public long getBiayaLangsungBulanan() {
+    public BigDecimal getBiayaLangsungBulanan() {
         return biayaLangsungBulanan;
     }
 
@@ -140,7 +143,7 @@ public class AnalisisKelayakan {
      *
      * @return biaya operasional bulanan dalam rupiah
      */
-    public long getBiayaOperasionalBulanan() {
+    public BigDecimal getBiayaOperasionalBulanan() {
         return biayaOperasionalBulanan;
     }
 
@@ -149,7 +152,7 @@ public class AnalisisKelayakan {
      *
      * @return kewajiban usaha bulanan dalam rupiah
      */
-    public long getKewajibanUsahaBulanan() {
+    public BigDecimal getKewajibanUsahaBulanan() {
         return kewajibanUsahaBulanan;
     }
 
@@ -157,21 +160,17 @@ public class AnalisisKelayakan {
      * Menghitung omzet setelah dikurangi biaya langsung dan biaya operasional.
      *
      * @return laba operasional bulanan dalam rupiah
-     * @throws ArithmeticException jika hasil perhitungan melampaui kapasitas {@code long}
      */
-    public long hitungLabaOperasionalBulanan() {
-        return Math.subtractExact(
-                Math.subtractExact(omzetBulanan, biayaLangsungBulanan),
-                biayaOperasionalBulanan);
+    public BigDecimal hitungLabaOperasionalBulanan() {
+        return omzetBulanan.subtract(biayaLangsungBulanan).subtract(biayaOperasionalBulanan);
     }
 
     /**
      * Menghitung arus kas tersedia berdasarkan data analisis ini.
      *
      * @return arus kas tersedia bulanan dalam rupiah
-     * @throws ArithmeticException jika hasil perhitungan melampaui kapasitas {@code long}
      */
-    public long hitungArusKasTersediaBulanan() {
+    public BigDecimal hitungArusKasTersediaBulanan() {
         return hitungArusKasTersediaBulanan(
                 omzetBulanan,
                 biayaLangsungBulanan,
@@ -187,24 +186,22 @@ public class AnalisisKelayakan {
      * @param biayaOperasionalBulanan biaya operasional bulanan dalam rupiah
      * @param kewajibanUsahaBulanan kewajiban usaha bulanan dalam rupiah
      * @return arus kas tersedia bulanan dalam rupiah
-     * @throws IllegalArgumentException jika ada nilai negatif
-     * @throws ArithmeticException jika hasil perhitungan melampaui kapasitas {@code long}
+     * @throws IllegalArgumentException jika ada nilai negatif atau null
      */
-    public static long hitungArusKasTersediaBulanan(
-            long omzetBulanan,
-            long biayaLangsungBulanan,
-            long biayaOperasionalBulanan,
-            long kewajibanUsahaBulanan) {
-        if (omzetBulanan < 0 || biayaLangsungBulanan < 0
-                || biayaOperasionalBulanan < 0 || kewajibanUsahaBulanan < 0) {
-            throw new IllegalArgumentException(
-                    "Data keuangan usaha tidak boleh negatif");
+    public static BigDecimal hitungArusKasTersediaBulanan(
+            BigDecimal omzetBulanan,
+            BigDecimal biayaLangsungBulanan,
+            BigDecimal biayaOperasionalBulanan,
+            BigDecimal kewajibanUsahaBulanan) {
+        if (omzetBulanan == null || omzetBulanan.compareTo(BigDecimal.ZERO) < 0
+                || biayaLangsungBulanan == null || biayaLangsungBulanan.compareTo(BigDecimal.ZERO) < 0
+                || biayaOperasionalBulanan == null || biayaOperasionalBulanan.compareTo(BigDecimal.ZERO) < 0
+                || kewajibanUsahaBulanan == null || kewajibanUsahaBulanan.compareTo(BigDecimal.ZERO) < 0) {
+            throw new IllegalArgumentException("Data keuangan usaha tidak boleh negatif atau null");
         }
-        return Math.subtractExact(
-                Math.subtractExact(
-                        Math.subtractExact(omzetBulanan, biayaLangsungBulanan),
-                        biayaOperasionalBulanan),
-                kewajibanUsahaBulanan);
+        return omzetBulanan.subtract(biayaLangsungBulanan)
+                .subtract(biayaOperasionalBulanan)
+                .subtract(kewajibanUsahaBulanan);
     }
 
     /**
@@ -222,11 +219,15 @@ public class AnalisisKelayakan {
      * @param arusKasTersedia arus kas bulanan dalam rupiah
      * @return rekomendasi yang sesuai dengan tanda nilai arus kas
      */
-    public static Rekomendasi rekomendasiUntukArusKas(long arusKasTersedia) {
-        if (arusKasTersedia > 0) {
+    public static Rekomendasi rekomendasiUntukArusKas(BigDecimal arusKasTersedia) {
+        if (arusKasTersedia == null) {
+            return Rekomendasi.PERLU_TINJAUAN;
+        }
+        int perbandingan = arusKasTersedia.compareTo(BigDecimal.ZERO);
+        if (perbandingan > 0) {
             return Rekomendasi.LAYAK_DIPERTIMBANGKAN;
         }
-        if (arusKasTersedia == 0) {
+        if (perbandingan == 0) {
             return Rekomendasi.PERLU_TINJAUAN;
         }
         return Rekomendasi.TIDAK_DIREKOMENDASIKAN;
@@ -253,12 +254,12 @@ public class AnalisisKelayakan {
                 + "\nTanggal analisis: " + tanggalAnalisis
                 + "\nID pengajuan: " + pengajuan.getIdPengajuan()
                 + "\nPegawai penganalisis: " + pegawaiAnalisis.getNama()
-                + "\nOmzet bulanan: Rp" + omzetBulanan
-                + "\nBiaya langsung bulanan: Rp" + biayaLangsungBulanan
-                + "\nBiaya operasional bulanan: Rp" + biayaOperasionalBulanan
-                + "\nLaba operasional bulanan: Rp" + hitungLabaOperasionalBulanan()
-                + "\nKewajiban usaha bulanan: Rp" + kewajibanUsahaBulanan
-                + "\nArus kas tersedia bulanan: Rp" + hitungArusKasTersediaBulanan()
+                + "\nOmzet bulanan: " + Uang.formatRupiah(omzetBulanan)
+                + "\nBiaya langsung bulanan: " + Uang.formatRupiah(biayaLangsungBulanan)
+                + "\nBiaya operasional bulanan: " + Uang.formatRupiah(biayaOperasionalBulanan)
+                + "\nLaba operasional bulanan: " + Uang.formatRupiah(hitungLabaOperasionalBulanan())
+                + "\nKewajiban usaha bulanan: " + Uang.formatRupiah(kewajibanUsahaBulanan)
+                + "\nArus kas tersedia bulanan: " + Uang.formatRupiah(hitungArusKasTersediaBulanan())
                 + "\nRekomendasi internal: " + getRekomendasiInternal()
                 + "\nCatatan risiko: " + catatanRisiko;
     }

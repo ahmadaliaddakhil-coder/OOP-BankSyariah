@@ -1,7 +1,9 @@
 package model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import util.Uang;
 
 /**
  * Menyimpan identitas nasabah serta hubungan nasabah dengan usaha, rekening,
@@ -13,7 +15,7 @@ public class Nasabah {
     private final String alamat;
     private final String tanggalLahir; // Format: yyyy-MM-dd
     private final String pekerjaan;
-    private final long gajiBulanan;
+    private final BigDecimal gajiBulanan;
 
     private final List<Usaha> daftarUsaha;
     private final List<PengajuanPembiayaan> daftarPengajuan;
@@ -28,7 +30,7 @@ public class Nasabah {
      * @param tanggalLahir tanggal lahir dalam format {@code yyyy-MM-dd}
      * @param pekerjaan pekerjaan nasabah
      * @param gajiBulanan gaji bulanan dalam rupiah
-     * @throws IllegalArgumentException jika gaji bulanan negatif
+     * @throws IllegalArgumentException jika gaji bulanan negatif atau null
      */
     public Nasabah(
             String nomorId,
@@ -36,8 +38,8 @@ public class Nasabah {
             String alamat,
             String tanggalLahir,
             String pekerjaan,
-            long gajiBulanan) {
-        if (gajiBulanan < 0) {
+            BigDecimal gajiBulanan) {
+        if (gajiBulanan == null || gajiBulanan.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Gaji bulanan tidak boleh negatif");
         }
         this.nomorId = nomorId;
@@ -198,7 +200,7 @@ public class Nasabah {
      *
      * @return gaji bulanan nasabah dalam rupiah
      */
-    public long getGajiBulanan() {
+    public BigDecimal getGajiBulanan() {
         return gajiBulanan;
     }
 
@@ -215,8 +217,7 @@ public class Nasabah {
                 + "\nAlamat: " + alamat
                 + "\nTanggal lahir: " + tanggalLahir
                 + "\nPekerjaan: " + pekerjaan
-                + "\nGaji bulanan: Rp" + gajiBulanan
+                + "\nGaji bulanan: " + Uang.formatRupiah(gajiBulanan)
                 + "\nJumlah usaha: " + daftarUsaha.size();
     }
-
 }
