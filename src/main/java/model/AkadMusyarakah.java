@@ -1,25 +1,19 @@
 package model;
 
 import enums.JenisAkad;
+import java.math.BigDecimal;
+import util.Uang;
 
 /**
  * Akad pembiayaan musyarakah yang mencatat modal kontribusi nasabah.
+ * Kerugian finansial dibagi secara proporsional sesuai porsi penyertaan modal masing-masing.
  */
 public class AkadMusyarakah extends AkadPembiayaan {
 
-    private final long modalNasabah;
+    private final BigDecimal modalNasabah;
 
     /**
      * Membuat akad musyarakah berdasarkan keputusan yang disetujui.
-     *
-     * @param nomorAkad nomor identitas akad
-     * @param bank bank pemberi pembiayaan
-     * @param keputusan keputusan pembiayaan yang disetujui
-     * @param tanggalJatuhTempo tanggal jatuh tempo
-     * @param nisbahBank porsi nisbah bank dalam persen
-     * @param nisbahNasabah porsi nisbah nasabah dalam persen
-     * @param modalNasabah modal kontribusi nasabah dalam rupiah
-     * @throws IllegalArgumentException jika modal nasabah tidak positif
      */
     public AkadMusyarakah(
             String nomorAkad,
@@ -28,7 +22,7 @@ public class AkadMusyarakah extends AkadPembiayaan {
             String tanggalJatuhTempo,
             int nisbahBank,
             int nisbahNasabah,
-            long modalNasabah) {
+            BigDecimal modalNasabah) {
         super(
                 nomorAkad,
                 bank,
@@ -37,7 +31,7 @@ public class AkadMusyarakah extends AkadPembiayaan {
                 nisbahBank,
                 nisbahNasabah);
 
-        if (modalNasabah <= 0) {
+        if (modalNasabah == null || modalNasabah.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException(
                     "Modal nasabah harus lebih besar dari 0 untuk akad musyarakah");
         }
@@ -50,24 +44,33 @@ public class AkadMusyarakah extends AkadPembiayaan {
      *
      * @return modal kontribusi nasabah dalam rupiah
      */
-    public long getModalNasabah() {
+    public BigDecimal getModalNasabah() {
         return modalNasabah;
     }
 
-    /** {@inheritDoc} */
     @Override
     public JenisAkad getJenisAkad() {
         return JenisAkad.MUSYARAKAH;
     }
 
-    /**
-     * Menghasilkan ringkasan akad beserta modal kontribusi nasabah.
-     *
-     * @return ringkasan akad beserta modal kontribusi nasabah
-     */
+    @Override
+    public BigDecimal hitungBebanKerugianBank(BigDecimal totalKerugian) {
+        if (totalKerugian == null || totalKerugian.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal modalBank = getJumlahDisetujui();
+        BigDecimal totalModal = modalBank.add(modalNasabah);
+        if (totalModal.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        // Kaidah Syariah: Kerugian ditanggung proporsional modal (modal bank / total modal)
+        return totalKerugian.multiply(modalBank)
+                .divide(totalModal, Uang.SKALA_PERHITUNGAN, Uang.ROUNDING_MODE);
+    }
+
     @Override
     public String toString() {
         return super.toString()
-                + "\nModal nasabah: Rp" + modalNasabah;
+                + "\nModal nasabah: " + Uang.formatRupiah(modalNasabah);
     }
 }

@@ -1,26 +1,21 @@
 package model;
 
+import java.math.BigDecimal;
+import util.Uang;
+
 /**
- * Catatan pencairan dana akad ke rekening nasabah.
+ * Catatan pencairan dana akad ke rekening nasabah berbasis BigDecimal.
  */
 public class Pencairan {
     private final String idPencairan;
     private final AkadPembiayaan akad;
     private final RekeningNasabah rekeningTujuan;
-    private final long jumlah;
+    private final BigDecimal jumlah;
     private final String tanggalPencairan;
     private final String referensiTransaksi;
 
     /**
      * Membuat catatan pencairan untuk rekening milik nasabah pada akad.
-     *
-     * @param idPencairan nomor identitas pencairan
-     * @param akad akad yang dicairkan
-     * @param rekeningTujuan rekening terdaftar milik nasabah penerima
-     * @param tanggalPencairan tanggal pencairan
-     * @param referensiTransaksi referensi transaksi
-     * @throws IllegalArgumentException jika data tidak lengkap atau rekening tidak
-     *         sesuai dengan nasabah pada akad
      */
     Pencairan(
             String idPencairan,
@@ -62,71 +57,36 @@ public class Pencairan {
         this.referensiTransaksi = referensiTransaksi;
     }
 
-    /**
-     * Mengembalikan nomor identitas pencairan.
-     *
-     * @return nomor identitas pencairan
-     */
     public String getIdPencairan() {
         return idPencairan;
     }
 
-    /**
-     * Mengembalikan akad yang dicairkan.
-     *
-     * @return akad yang dicairkan
-     */
     public AkadPembiayaan getAkad() {
         return akad;
     }
 
-    /**
-     * Mengembalikan rekening tujuan pencairan.
-     *
-     * @return rekening tujuan pencairan
-     */
     public RekeningNasabah getRekeningTujuan() {
         return rekeningTujuan;
     }
 
-    /**
-     * Mengembalikan jumlah pencairan dalam rupiah.
-     *
-     * @return jumlah pencairan dalam rupiah
-     */
-    public long getJumlah() {
+    public BigDecimal getJumlah() {
         return jumlah;
     }
 
-    /**
-     * Mengembalikan tanggal pencairan.
-     *
-     * @return tanggal pencairan
-     */
     public String getTanggalPencairan() {
         return tanggalPencairan;
     }
 
-    /**
-     * Mengembalikan referensi transaksi pencairan.
-     *
-     * @return referensi transaksi pencairan
-     */
     public String getReferensiTransaksi() {
         return referensiTransaksi;
     }
 
-    /**
-     * Menghasilkan ringkasan transaksi pencairan.
-     *
-     * @return ringkasan transaksi pencairan
-     */
     @Override
     public String toString() {
         return "Pencairan:"
                 + "\nID pencairan: " + idPencairan
                 + "\nNomor akad: " + akad.getNomorAkad()
-                + "\nJumlah: Rp" + jumlah
+                + "\nJumlah: " + Uang.formatRupiah(jumlah)
                 + "\nTanggal pencairan: " + tanggalPencairan
                 + "\nRekening tujuan: " + rekeningTujuan.getNomorRekening()
                 + "\nReferensi transaksi: " + referensiTransaksi;

@@ -1,12 +1,15 @@
 package model;
 
+import java.math.BigDecimal;
+import util.Uang;
+
 /**
- * Mewakili rekening milik nasabah dan saldonya dalam rupiah.
+ * Mewakili rekening milik nasabah dan saldonya dalam rupiah berbasis BigDecimal.
  */
 public class RekeningNasabah {
     private final String nomorRekening;
     private final Nasabah pemilik;
-    private long saldo;
+    private BigDecimal saldo;
 
     /**
      * Membuat rekening dengan saldo awal.
@@ -19,14 +22,14 @@ public class RekeningNasabah {
     public RekeningNasabah(
             String nomorRekening,
             Nasabah pemilik,
-            long saldoAwal) {
+            BigDecimal saldoAwal) {
         if (nomorRekening == null || nomorRekening.trim().isEmpty()) {
             throw new IllegalArgumentException("Nomor rekening wajib diisi");
         }
         if (pemilik == null) {
             throw new IllegalArgumentException("Pemilik rekening tidak boleh null");
         }
-        if (saldoAwal < 0) {
+        if (saldoAwal == null || saldoAwal.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Saldo awal tidak boleh negatif");
         }
 
@@ -58,16 +61,16 @@ public class RekeningNasabah {
      *
      * @return saldo rekening dalam rupiah
      */
-    public long getSaldo() {
+    public BigDecimal getSaldo() {
         return saldo;
     }
 
-    void kredit(long jumlah) {
-        if (jumlah <= 0) {
+    void kredit(BigDecimal jumlah) {
+        if (jumlah == null || jumlah.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException(
                     "Jumlah kredit harus lebih besar dari 0");
         }
-        saldo = Math.addExact(saldo, jumlah);
+        this.saldo = this.saldo.add(jumlah);
     }
 
     /**
@@ -80,6 +83,6 @@ public class RekeningNasabah {
         return "Rekening Nasabah"
                 + "\nNomor rekening: " + nomorRekening
                 + "\nPemilik: " + pemilik.getNamaPihak()
-                + "\nSaldo: Rp" + saldo;
+                + "\nSaldo: " + Uang.formatRupiah(saldo);
     }
 }

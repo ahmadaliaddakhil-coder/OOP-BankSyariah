@@ -1,4 +1,8 @@
 {
-    "java.project.sourcePaths": ["src/main/java", "src/test/java"],
-    "java.project.outputPath": "bin"
+    "java.project.sourcePaths": [
+        "src/main/java",
+        "src/test/java"
+    ],
+    "java.project.outputPath": "bin",
+    "javaVisual.lastProjectRoot": "c:\\Users\\husni\\Documents\\sem 3\\oop\\OOP-BankSyariah\\OOP-BankSyariah"
 }

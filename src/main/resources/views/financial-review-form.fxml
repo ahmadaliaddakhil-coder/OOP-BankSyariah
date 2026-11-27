@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 
-<ScrollPane fitToWidth="true" prefViewportHeight="580.0"
+<ScrollPane fitToWidth="true" prefViewportHeight="400.0"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
     <content>
         <GridPane fx:id="formGrid" styleClass="form-grid" hgap="14.0" vgap="10.0">
@@ -28,10 +28,11 @@
                 <TextField fx:id="operatingCost" promptText="Contoh: 8.000.000" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                 <Label text="Kewajiban usaha" GridPane.rowIndex="4"/>
                 <TextField fx:id="obligations" promptText="Contoh: 3.000.000" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
-                <Label text="Arus kas = omzet - biaya langsung - biaya operasional - kewajiban."
-                       wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="5"/>
+                <Label text="Rumus: Arus Kas = Omzet - Biaya Langsung - Biaya Operasional - Kewajiban."
+                       styleClass="hint-text" wrapText="true" GridPane.columnSpan="2" GridPane.rowIndex="5"/>
                 <Label text="Arus kas tersedia" GridPane.rowIndex="6"/>
                 <Label fx:id="cashFlowPreview" wrapText="true"
+                       style="-fx-font-weight: bold; -fx-text-fill: #0f634e; -fx-font-size: 13px;"
                        GridPane.columnIndex="1" GridPane.rowIndex="6"/>
                 <Label text="Catatan pemeriksaan" GridPane.rowIndex="7"/>
                 <TextArea fx:id="risk" promptText="Catat hasil verifikasi / risiko"

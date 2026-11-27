@@ -33,12 +33,12 @@ public class BankSyariahApp extends Application {
             throw new IllegalStateException("Tidak dapat memuat tampilan utama JavaFX.", error);
         }
 
-        Scene scene = new Scene(root, 1240, 780);
+        Scene scene = new Scene(root, 1280, 820);
         scene.getStylesheets().add(
                 getClass().getResource("/css/app.css").toExternalForm());
-        stage.setTitle("Berkah | Pembiayaan Modal Syariah");
-        stage.setMinWidth(1100);
-        stage.setMinHeight(680);
+        stage.setTitle("Berkah Syariah | Portal Digital Pembiayaan Modal Usaha");
+        stage.setMinWidth(1120);
+        stage.setMinHeight(700);
         stage.setScene(scene);
         stage.show();
     }

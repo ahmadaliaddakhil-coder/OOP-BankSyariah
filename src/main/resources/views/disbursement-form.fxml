@@ -15,9 +15,9 @@
             <columnConstraints><ColumnConstraints minWidth="190.0"/><ColumnConstraints hgrow="ALWAYS"/></columnConstraints>
             <children>
                 <Label text="Jumlah dicairkan (otomatis)" GridPane.rowIndex="0"/>
-                <Label fx:id="amount" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Label fx:id="amount" style="-fx-font-weight: bold; -fx-text-fill: #0f634e; -fx-font-size: 14px;" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
                 <Label text="Rekening tujuan (dari pengajuan)" GridPane.rowIndex="1"/>
-                <Label fx:id="account" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label fx:id="account" wrapText="true" style="-fx-font-weight: 600;" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
                 <Label text="Tanggal pencairan" GridPane.rowIndex="2"/>
                 <DatePicker fx:id="date" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
                 <Label text="Referensi transaksi" GridPane.rowIndex="3"/>

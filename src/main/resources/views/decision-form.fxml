@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 
-<ScrollPane fitToWidth="true" prefViewportHeight="580.0"
+<ScrollPane fitToWidth="true" prefViewportHeight="380.0"
             xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
     <content>
         <GridPane fx:id="formGrid" styleClass="form-grid" hgap="14.0" vgap="10.0">
@@ -26,7 +26,9 @@
                 <Label text="Keputusan pegawai" GridPane.rowIndex="3"/>
                 <ChoiceBox fx:id="decision" maxWidth="Infinity" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
                 <Label text="Jumlah disetujui" GridPane.rowIndex="4"/>
-                <Label fx:id="approvedAmount" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Label fx:id="approvedAmount" wrapText="true"
+                       style="-fx-font-weight: bold; -fx-text-fill: #0f634e; -fx-font-size: 13px;"
+                       GridPane.columnIndex="1" GridPane.rowIndex="4"/>
                 <Label text="Jika disetujui, jumlah mengikuti nominal pengajuan nasabah dan tidak perlu diinput ulang."
                        styleClass="hint-text" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                 <Label text="Alasan keputusan" GridPane.rowIndex="6"/>

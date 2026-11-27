@@ -1,21 +1,17 @@
 package model;
 
 import enums.JenisAkad;
+import java.math.BigDecimal;
 
 /**
  * Akad pembiayaan dengan jenis mudharabah.
+ * Seluruh modal disediakan oleh bank (shahibul maal) dan kerugian finansial ditanggung 100% oleh bank
+ * selama bukan diakibatkan oleh kelalaian atau kecurangan mudharib (nasabah).
  */
 public class AkadMudharabah extends AkadPembiayaan {
 
     /**
      * Membuat akad mudharabah berdasarkan keputusan yang disetujui.
-     *
-     * @param nomorAkad nomor identitas akad
-     * @param bank bank pemberi pembiayaan
-     * @param keputusan keputusan pembiayaan yang disetujui
-     * @param tanggalJatuhTempo tanggal jatuh tempo
-     * @param nisbahBank porsi nisbah bank dalam persen
-     * @param nisbahNasabah porsi nisbah nasabah dalam persen
      */
     public AkadMudharabah(
             String nomorAkad,
@@ -33,9 +29,17 @@ public class AkadMudharabah extends AkadPembiayaan {
                 nisbahNasabah);
     }
 
-    /** {@inheritDoc} */
     @Override
     public JenisAkad getJenisAkad() {
         return JenisAkad.MUDHARABAH;
+    }
+
+    @Override
+    public BigDecimal hitungBebanKerugianBank(BigDecimal totalKerugian) {
+        if (totalKerugian == null || totalKerugian.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+        // Pada Mudharabah murni, kerugian finansial 100% ditanggung shahibul maal (bank)
+        return totalKerugian;
     }
 }
